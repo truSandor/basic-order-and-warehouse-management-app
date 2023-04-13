@@ -24,6 +24,6 @@ public class Order {
     private LocalDateTime deadline;
     private LocalDateTime dateStarted;
     private LocalDateTime dateCompleted;
-    private boolean inProgress = false;
+    private Status status = Status.NOT_STARTED;
     private boolean visible = true;
 }
