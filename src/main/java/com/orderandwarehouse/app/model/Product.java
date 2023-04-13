@@ -1,8 +1,11 @@
 package com.orderandwarehouse.app.model;
 
+import com.orderandwarehouse.app.converter.DimensionsConverter;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -12,22 +15,18 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Nonnull
+    @Column(length = 120)
     private String name;
+    @Column(length = 10)
     private String version;
+    @Nonnull
     @OneToOne
     private PartsList partsList;
-    @Transient
+    @Convert(converter = DimensionsConverter.class)
+    @Column(length = 11)
     private Dimensions dimensions;
     private Integer weightInGrammes;
-    private boolean isVisible = true;
-
-    @Column(name = "dimensions")
-    protected String getDimensionsAsString() {
-        return dimensions != null ? dimensions.toString() : null;
-    }
-
-    protected void setDimensionsAsString(String dimensions){
-        this.dimensions = new Dimensions(dimensions);
-    }
-
+    private boolean visible = true;
+    @OneToMany(mappedBy = "product")
+    private List<Order> orders;
 }

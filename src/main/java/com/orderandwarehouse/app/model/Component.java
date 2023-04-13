@@ -1,5 +1,7 @@
 package com.orderandwarehouse.app.model;
 
+import com.orderandwarehouse.app.converter.DimensionsConverter;
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,30 +15,29 @@ public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 120)
+    @Nonnull
     private String name;
+    @Nonnull
     private Type type;
     private Double primaryValue;
+    @Column(length = 4)
     private String primaryUnit;
     private Double secondaryValue;
+    @Column(length = 4)
     private String secondaryUnit;
     private Integer tolerance;
-    @Transient
+    @Convert(converter = DimensionsConverter.class)
+    @Column(length = 11)
     private Dimensions packageDimensions;
     private Integer weightInGrammes;
+    @Column(length = 40)
     private String manufacturerId;
+    @Column(length = 40)
     private String traderComponentId;
     @OneToMany(mappedBy = "component")
     private List<StorageUnit> storageUnits;
-//    @OneToMany(mappedBy = "component")
-//    private List<PartsListRow> partsListRows;
-    private boolean isVisible = true;
-
-    @Column(name = "packageDimensions")
-    protected String getDimensionsAsString() {
-        return packageDimensions != null ? packageDimensions.toString() : null;
-    }
-
-    protected void setDimensionsAsString(String packageDimensions){
-        this.packageDimensions = new Dimensions(packageDimensions);
-    }
+    @OneToMany(mappedBy = "component")
+    private List<PartsListRow> partsListRows;
+    private boolean visible = true;
 }

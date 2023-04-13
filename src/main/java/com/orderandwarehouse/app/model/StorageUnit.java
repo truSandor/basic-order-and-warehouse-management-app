@@ -2,8 +2,11 @@ package com.orderandwarehouse.app.model;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
+@Table(name = "storage_unit")
 public class StorageUnit {
 
     @Id
@@ -12,10 +15,13 @@ public class StorageUnit {
     @ManyToOne
     private Component component;
     @Nonnull
+    @Column(name = "[row]")
     private Integer row;
     @Nonnull
+    @Column(name = "[column]")
     private Integer column;
     @Nonnull
+    @Column(name = "shelf")
     private Integer shelf;
     private Double quantity;
     private boolean isFull;
