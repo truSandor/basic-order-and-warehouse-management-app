@@ -21,9 +21,9 @@ public class StorageUnit {
     @Column(name = "[column]")
     private Integer column;
     @Nonnull
-    @Column(name = "shelf")
     private Integer shelf;
     private Double quantity;
+    @Column(name = "[full]")
     private boolean full;
     private boolean visible = true;
 }
