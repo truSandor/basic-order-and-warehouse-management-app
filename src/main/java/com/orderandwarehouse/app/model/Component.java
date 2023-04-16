@@ -30,7 +30,7 @@ public class Component {
     @Convert(converter = DimensionsConverter.class)
     @Column(length = 11)
     private Dimensions packageDimensions;
-    private Integer weightInGrammes;
+    private Double weightInGrammes;
     @Column(length = 40)
     private String manufacturerId;
     @Column(length = 40)
