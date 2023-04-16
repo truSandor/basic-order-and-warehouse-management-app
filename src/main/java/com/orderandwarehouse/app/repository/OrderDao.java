@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface OrderDao extends JpaRepository<Order, Long> {
-
-    public List<Order> findAllByVisibleTrueOrderByDateReceivedDesc();
+    List<Order> findAllByVisibleTrueOrderByDateReceivedDesc();
 }

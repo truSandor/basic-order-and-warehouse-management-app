@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ComponentDao extends JpaRepository<Component, Long> {
-    public List<Component> findAllByVisibleTrueOrderByIdAsc();
+    List<Component> findAllByVisibleTrueOrderByIdAsc();
 }
