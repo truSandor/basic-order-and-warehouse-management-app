@@ -14,6 +14,8 @@ public class DimensionsConverter implements AttributeConverter<Dimensions, Strin
 
     @Override
     public Dimensions convertToEntityAttribute(String dimensionsAsString) {
-        return new Dimensions(dimensionsAsString);
+        var dimensions = new Dimensions();
+        dimensions.setDimensionsFromString(dimensionsAsString);
+        return dimensions;
     }
 }
