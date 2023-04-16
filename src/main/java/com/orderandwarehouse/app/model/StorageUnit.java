@@ -24,6 +24,6 @@ public class StorageUnit {
     @Column(name = "shelf")
     private Integer shelf;
     private Double quantity;
-    private boolean isFull;
+    private boolean full;
     private boolean visible = true;
 }
