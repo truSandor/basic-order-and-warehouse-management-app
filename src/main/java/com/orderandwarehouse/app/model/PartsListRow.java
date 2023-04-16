@@ -22,12 +22,13 @@ public class PartsListRow {
     @Nonnull
     private Double quantity;
     @Column(length = 4)
-    private String unit = "pc";
-    @Column(length = 1000)
+    private String unit = "pcs";
+    @Column(name="[comment]", length = 1000)
     private String Comment;
     @Nonnull
     private LocalDateTime dateAdded;
     @Nonnull
     private LocalDateTime dateModified;
+    @Column(name="[visible]")
     private boolean visible = true;
 }

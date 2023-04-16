@@ -25,5 +25,6 @@ public class Order {
     private LocalDateTime dateStarted;
     private LocalDateTime dateCompleted;
     private Status status = Status.NOT_STARTED;
+    @Column(name="[visible]")
     private boolean visible = true;
 }

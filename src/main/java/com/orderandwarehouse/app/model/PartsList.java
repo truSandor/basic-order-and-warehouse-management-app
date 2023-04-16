@@ -20,5 +20,6 @@ public class PartsList {
     private LocalDateTime date_added;
     @Nonnull
     private LocalDateTime date_modified;
+    @Column(name="[visible]")
     private boolean visible = true;
 }

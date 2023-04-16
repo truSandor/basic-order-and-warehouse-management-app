@@ -15,7 +15,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Nonnull
-    @Column(length = 120)
+    @Column(name="[name]", length = 120)
     private String name;
     @Column(length = 10)
     private String version;
@@ -26,6 +26,7 @@ public class Product {
     @Column(length = 11)
     private Dimensions dimensions;
     private Integer weightInGrammes;
+    @Column(name="[visible]")
     private boolean visible = true;
     @OneToMany(mappedBy = "product")
     private List<Order> orders;

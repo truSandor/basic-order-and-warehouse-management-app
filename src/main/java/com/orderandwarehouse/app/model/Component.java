@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orderandwarehouse.app.converter.DimensionsConverter;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
@@ -15,10 +16,11 @@ public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 120)
+    @Column(name="[name]", length = 120)
     @Nonnull
     private String name;
     @Nonnull
+    @Column(name="[type]")
     private Type type;
     private Double primaryValue;
     @Column(length = 4)
@@ -36,8 +38,11 @@ public class Component {
     @Column(length = 40)
     private String traderComponentId;
     @OneToMany(mappedBy = "component")
+    @JsonIgnore
     private List<StorageUnit> storageUnits;
     @OneToMany(mappedBy = "component")
+    @JsonIgnore
     private List<PartsListRow> partsListRows;
+    @Column(name="[visible]")
     private boolean visible = true;
 }
