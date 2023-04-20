@@ -1,10 +1,10 @@
 package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.orderandwarehouse.app.converter.DimensionsConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -34,9 +34,9 @@ public class Component {
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String secondaryUnit;
     private Integer tolerance;
-    @Convert(converter = DimensionsConverter.class)
-    @Size(max = 8, message = MAX_SIZE_MESSAGE)
-    private Dimensions packageDimensions; //todo replace with String llxWWxhh (cm) + validate
+    @Size(max = 8)
+    @Pattern(regexp ="^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
+    private String packageDimensions;
     private Double weightInGrammes;
     @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String manufacturerId;
