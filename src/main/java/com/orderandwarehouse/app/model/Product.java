@@ -1,8 +1,10 @@
 package com.orderandwarehouse.app.model;
 
 import com.orderandwarehouse.app.converter.DimensionsConverter;
-import jakarta.annotation.Nonnull;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
@@ -11,20 +13,24 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 public class Product {
+
+    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Nonnull
-    @Column(name="[name]", length = 120)
+    @NotNull
+    @Column(name="[name]")
+    @Size(max = 120, message = MAX_SIZE_MESSAGE)
     private String name;
-    @Column(length = 10)
+    @Size(max = 10, message = MAX_SIZE_MESSAGE)
     private String version;
-    @Nonnull
+    @NotNull
     @OneToOne
     private PartsList partsList;
     @Convert(converter = DimensionsConverter.class)
-    @Column(length = 11)
-    private Dimensions dimensions;
+    @Size(max = 8, message = MAX_SIZE_MESSAGE)
+    private Dimensions dimensions; //todo replace with String llxWWxhh (cm) + validate
     private Integer weightInGrammes;
     @Column(name="[visible]")
     private boolean visible = true;

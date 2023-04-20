@@ -1,7 +1,8 @@
 package com.orderandwarehouse.app.model;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,24 +11,28 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "parts_list_row")
 public class PartsListRow {
+
+    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Nonnull
+    @NotNull
     @ManyToOne
     private PartsList partsList;
-    @Nonnull
+    @NotNull
     @ManyToOne
     private Component component;
-    @Nonnull
+    @NotNull
     private Double quantity;
-    @Column(length = 4)
+    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String unit = "pcs";
-    @Column(name="[comment]", length = 1000)
+    @Column(name="[comment]")
+    @Size(max = 1000, message = MAX_SIZE_MESSAGE)
     private String Comment;
-    @Nonnull
+    @NotNull
     private LocalDateTime dateAdded;
-    @Nonnull
+    @NotNull
     private LocalDateTime dateModified;
     @Column(name="[visible]")
     private boolean visible = true;

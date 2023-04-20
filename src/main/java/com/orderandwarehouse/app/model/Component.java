@@ -2,8 +2,10 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orderandwarehouse.app.converter.DimensionsConverter;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
@@ -13,29 +15,32 @@ import java.util.List;
 @Table(name = "component")
 public class Component {
 
+    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="[name]", length = 120)
-    @Nonnull
+    @Column(name="[name]")
+    @Size(max=120, message = MAX_SIZE_MESSAGE)
+    @NotBlank(message = "Name must not be blank!")
     private String name;
-    @Nonnull
+    @NotNull
     @Column(name="[type]")
     private Type type;
     private Double primaryValue;
-    @Column(length = 4)
+    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String primaryUnit;
     private Double secondaryValue;
-    @Column(length = 4)
+    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String secondaryUnit;
     private Integer tolerance;
     @Convert(converter = DimensionsConverter.class)
-    @Column(length = 11)
-    private Dimensions packageDimensions;
+    @Size(max = 8, message = MAX_SIZE_MESSAGE)
+    private Dimensions packageDimensions; //todo replace with String llxWWxhh (cm) + validate
     private Double weightInGrammes;
-    @Column(length = 40)
+    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String manufacturerId;
-    @Column(length = 40)
+    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String traderComponentId;
     @OneToMany(mappedBy = "component")
     @JsonIgnore

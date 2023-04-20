@@ -1,7 +1,7 @@
 package com.orderandwarehouse.app.model;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -14,13 +14,13 @@ public class StorageUnit {
     private Long id;
     @ManyToOne
     private Component component;
-    @Nonnull
+    @NotNull
     @Column(name = "[row]")
     private Integer row;
-    @Nonnull
+    @NotNull
     @Column(name = "[column]")
     private Integer column;
-    @Nonnull
+    @NotNull
     private Integer shelf;
     private Double quantity;
     @Column(name = "[full]")

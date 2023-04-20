@@ -1,7 +1,7 @@
 package com.orderandwarehouse.app.model;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,17 +14,18 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Nonnull
+    @NotNull
     @ManyToOne
     private Product product;
-    @Nonnull
+    @NotNull
     private Long quantity;
-    @Nonnull
+    @NotNull
     private LocalDateTime dateReceived;
     private LocalDateTime deadline;
     private LocalDateTime dateStarted;
     private LocalDateTime dateCompleted;
-    private Status status = Status.NOT_STARTED;
-    @Column(name="[visible]")
+    @NotNull
+    private Status status;
+    @Column(name = "[visible]")
     private boolean visible = true;
 }

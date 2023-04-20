@@ -1,7 +1,8 @@
 package com.orderandwarehouse.app.model;
 
-import jakarta.annotation.Nonnull;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -16,9 +17,9 @@ public class PartsList {
     private Long id;
     @OneToMany(mappedBy = "partsList")
     private List<PartsListRow> partsListRows;
-    @Nonnull
+    @NotNull
     private LocalDateTime date_added;
-    @Nonnull
+    @NotNull
     private LocalDateTime date_modified;
     @Column(name="[visible]")
     private boolean visible = true;
