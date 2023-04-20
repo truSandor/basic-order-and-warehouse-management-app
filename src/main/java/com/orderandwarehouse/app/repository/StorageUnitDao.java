@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface StorageUnitDao extends JpaRepository<StorageUnit, Long> {
     List<StorageUnit> findAllByVisibleTrueOrderByIdAsc();
+
+    List<StorageUnit> findStorageUnitsByComponent_Id(Long componentId);
 }

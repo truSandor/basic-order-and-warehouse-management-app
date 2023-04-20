@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ProductDao extends JpaRepository<Product, Long> {
     List<Product> findAllByVisibleTrueOrderByNameAscVersionAscIdAsc();
+
+    List<Product> findAllByVisibleTrueAndPartsListIdIsIn(List<Long> partListIds);
 }
