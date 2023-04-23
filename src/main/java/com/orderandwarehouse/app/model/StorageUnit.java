@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -12,7 +13,8 @@ public class StorageUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @JsonIdentityReference
+    @ManyToOne()
     private Component component;
     @NotNull
     @Column(name = "[row]")
