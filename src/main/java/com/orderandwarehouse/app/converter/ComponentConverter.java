@@ -7,8 +7,8 @@ import com.orderandwarehouse.app.model.dto.ComponentDto;
 
 @org.springframework.stereotype.Component
 public class ComponentConverter {
-    public Component DtoToEntity(ComponentDto dto) {
-        var entity = new Component();
+    public Component dtoToEntity(ComponentDto dto) {
+        Component entity = new Component();
         entity.setName(dto.getName());
         entity.setType(dto.getType());
         entity.setPrimaryValue(dto.getPrimaryValue());
@@ -23,7 +23,7 @@ public class ComponentConverter {
         return entity;
     }
 
-    public ComponentDto EntityToDto(Component entity) {
+    public ComponentDto entityToDto(Component entity) {
         return ComponentDto.builder()
                 .name(entity.getName())
                 .type(entity.getType())

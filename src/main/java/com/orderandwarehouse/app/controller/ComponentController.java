@@ -34,14 +34,12 @@ public class ComponentController {
 
     @PostMapping
     public ResponseEntity<Component> add(@RequestBody ComponentDto componentDto) {
-        return new ResponseEntity<>(service.add(converter.DtoToEntity(componentDto)), HttpStatus.OK);
+        return new ResponseEntity<>(service.add(converter.dtoToEntity(componentDto)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Component> update(@PathVariable Long id, @RequestBody ComponentDto componentDto) {
-        return service.update(id, converter.DtoToEntity(componentDto))
-                .map(c -> new ResponseEntity<>(c, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return new ResponseEntity<>(service.update(id, converter.dtoToEntity(componentDto)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
