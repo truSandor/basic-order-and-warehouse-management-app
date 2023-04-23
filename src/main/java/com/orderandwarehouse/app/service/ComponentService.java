@@ -36,13 +36,12 @@ public class ComponentService {
         return componentDao.save(component);
     }
 
-    public Optional<Component> update(Long id, @Valid Component component) {
-        var maybeComponent = componentDao.findByIdAndVisibleTrue(id);
-        component.setId(id);
-        return maybeComponent.map(mc -> {
-            component.setId(id);
-            return componentDao.save(component);
-        }); //not sure if this return statement works correctly
+    public Component update(Long id, @Valid Component component) {
+        Component componentFromDb = componentDao.findByIdAndVisibleTrue(id).orElseThrow(NoSuchElementException::new);
+        component.setId(componentFromDb.getId());
+        component.setPartsListRows(componentFromDb.getPartsListRows());
+        component.setStorageUnits(componentFromDb.getStorageUnits());
+        return componentDao.save(component);
     }
 
     public boolean softDelete(Long id) throws SQLException {
