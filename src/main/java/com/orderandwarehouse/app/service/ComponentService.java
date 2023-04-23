@@ -45,7 +45,7 @@ public class ComponentService {
     }
 
     public boolean softDelete(Long id) throws SQLException {
-        List<StorageUnit> storageUnits = storageUnitDao.findStorageUnitsByComponent_Id(id);
+        List<StorageUnit> storageUnits = storageUnitDao.findAllByVisibleTrueAndComponent_Id(id);
         List<PartsListRow> partsListRows = partsListRowDao.findAllByVisibleTrueAndComponent_Id(id);
         if (storageUnits.isEmpty() && partsListRows.isEmpty()) {
             Integer linesModifiedCount = componentDao.setInvisibleById(id);
