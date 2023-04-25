@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -26,5 +27,13 @@ public class ProductService {
 
     public Product add(@Valid Product product) {
         return productDao.save(product);
+    }
+
+    public Product update(Long id, @Valid Product product) {
+        Product productFromDb = productDao.findByIdAndVisibleTrue(id).orElseThrow(NoSuchElementException::new);
+        product.setId(productFromDb.getId());
+        //todo rework all updates: converter not needed, just get enitity form db, and updates fields changed in dto,
+        // then save the entity
+        return productDao.save(productFromDb);
     }
 }
