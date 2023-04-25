@@ -2,9 +2,10 @@ package com.orderandwarehouse.app.converter;
 
 import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.dto.ProductDto;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductConverter {
-
     public Product dtoToEntity(ProductDto dto) {
         Product entity = new Product();
         entity.setName(dto.getName());
