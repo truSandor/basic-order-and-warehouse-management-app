@@ -11,7 +11,5 @@ import java.util.Optional;
 public interface ProductDao extends JpaRepository<Product, Long> {
     List<Product> findAllByVisibleTrueOrderByNameAscVersionAscIdAsc();
 
-    List<Product> findAllByVisibleTrueAndPartsListIdIsIn(List<Long> partListIds);
-
     Optional<Product> findByIdAndVisibleTrue(Long id);
 }

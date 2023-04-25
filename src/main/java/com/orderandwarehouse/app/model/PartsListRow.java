@@ -19,7 +19,7 @@ public class PartsListRow {
     private Long id;
     @NotNull
     @ManyToOne
-    private PartsList partsList;
+    private Product product;
     @NotNull
     @ManyToOne
     private Component component;

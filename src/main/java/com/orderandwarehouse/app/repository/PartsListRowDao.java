@@ -10,8 +10,9 @@ import java.util.List;
 
 @Repository
 public interface PartsListRowDao extends JpaRepository<PartsListRow, Long> {
-    List<PartsListRow> findAllByVisibleTrueAndAndPartsListIdOrderById(Long partsListId);
+    List<PartsListRow> findAllByVisibleTrueAndAndProductIdOrderById(Long productId);
 
+    //probably not going to use this method
     @Modifying(clearAutomatically = true)
     @Query("update PartsListRow plr set plr.visible = false where plr.component.id = :componentId")
     void setInvisibleByComponentId(Long componentId);

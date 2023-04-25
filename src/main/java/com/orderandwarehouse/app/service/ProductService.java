@@ -1,7 +1,6 @@
 package com.orderandwarehouse.app.service;
 
 import com.orderandwarehouse.app.model.Product;
-import com.orderandwarehouse.app.repository.PartsListDao;
 import com.orderandwarehouse.app.repository.PartsListRowDao;
 import com.orderandwarehouse.app.repository.ProductDao;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductDao productDao;
-    private final PartsListDao partsListDao;
     private final PartsListRowDao partsListRowDao;
 
     public List<Product> getAll() {

@@ -85,17 +85,7 @@ public class ComponentService {
     }
 
     private List<Long> getProductIds(List<PartsListRow> partsListRows) {
-        return productDao.findAllByVisibleTrueAndPartsListIdIsIn(getPartListIds(partsListRows)).stream()
-                .map(Product::getId)
-                .toList();
-    }
-
-    private List<Long> getPartListIds(List<PartsListRow> partsListRows) {
-        return partsListRows.stream()
-                .map(PartsListRow::getPartsList)
-                .filter(PartsList::isVisible)
-                .map(PartsList::getId)
-                .toList();
+        return partsListRows.stream().map(plr -> plr.getProduct().getId()).distinct().toList();
     }
 
     public List<Component> getByNameLike(String nameLike) {
