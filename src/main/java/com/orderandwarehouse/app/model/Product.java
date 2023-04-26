@@ -19,19 +19,28 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    @Column(name="[name]")
+    @Column(name = "[name]")
     @Size(max = 120, message = MAX_SIZE_MESSAGE)
     private String name;
     @Size(max = 10, message = MAX_SIZE_MESSAGE)
     private String version;
     @Size(max = 8)
-    @Pattern(regexp ="^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
+    @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String dimensions;
     private Integer weightInGrammes;
-    @Column(name="[visible]")
+    @Column(name = "[visible]")
     private boolean visible = true;
     @OneToMany(mappedBy = "product")
     private List<PartsListRow> partsList;
     @OneToMany(mappedBy = "product")
     private List<Order> orders;
+
+    public boolean hasNoActiveOrders() {
+        if (orders != null) {
+            return orders.stream().filter(o -> o.getStatus().equals(Status.COMPLETED) || !o.isVisible()).count() == orders.size();
+        }
+        return true;
+    }
+
+
 }
