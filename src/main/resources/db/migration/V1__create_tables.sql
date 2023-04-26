@@ -12,7 +12,6 @@ create table if not exists component
     package_dimensions  varchar(11),
     manufacturer_id     varchar(40),
     trader_component_id varchar(40),
-    "visible"           boolean not null,
     primary key (id)
 );
 
@@ -26,7 +25,6 @@ create table if not exists "order"
     deadline       timestamp(6),
     date_started   timestamp(6),
     date_completed timestamp(6),
-    "visible"      boolean not null,
     primary key (id)
 );
 
@@ -40,7 +38,6 @@ create table if not exists parts_list_row
     "comment"     varchar(1000),
     date_added    timestamp(6),
     date_modified timestamp(6),
-    "visible"     boolean not null,
     primary key (id)
 );
 
@@ -51,7 +48,6 @@ create table if not exists product
     version           varchar(10),
     weight_in_grammes integer,
     dimensions        varchar(11),
-    "visible"         boolean not null,
     primary key (id)
 );
 
@@ -64,7 +60,6 @@ create table if not exists storage_unit
     component_id bigint,
     quantity     float(53),
     "full"       boolean,
-    "visible"    boolean not null,
     primary key (id)
 );
 
