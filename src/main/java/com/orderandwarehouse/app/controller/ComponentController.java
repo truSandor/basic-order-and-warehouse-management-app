@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -43,8 +42,11 @@ public class ComponentController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus softDelete(@PathVariable Long id) throws SQLException {
-        return service.softDelete(id) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    public HttpStatus delete(@PathVariable Long id) {
+        service.delete(id);
+        //todo check what happens if i try to delete one that is in use
+        //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
+        return HttpStatus.OK;
     }
 
     @GetMapping(params = "nameLike")
