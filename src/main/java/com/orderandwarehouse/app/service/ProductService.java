@@ -1,7 +1,7 @@
 package com.orderandwarehouse.app.service;
 
 import com.orderandwarehouse.app.model.Product;
-import com.orderandwarehouse.app.repository.PartsListRowDao;
+import com.orderandwarehouse.app.model.dto.ProductDto;
 import com.orderandwarehouse.app.repository.ProductDao;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductDao productDao;
-    private final PartsListRowDao partsListRowDao;
 
     public List<Product> getAll() {
         return productDao.findAllByVisibleTrueOrderByNameAscVersionAscIdAsc();
@@ -29,11 +28,12 @@ public class ProductService {
         return productDao.save(product);
     }
 
-    public Product update(Long id, @Valid Product product) {
-        Product productFromDb = productDao.findByIdAndVisibleTrue(id).orElseThrow(NoSuchElementException::new);
-        product.setId(productFromDb.getId());
-        //todo rework all updates: converter not needed, just get enitity form db, and updates fields changed in dto,
-        // then save the entity
-        return productDao.save(productFromDb);
+    public Product update(Long id, ProductDto dto) {
+        Product product = productDao.findByIdAndVisibleTrue(id).orElseThrow(NoSuchElementException::new);
+        product.setName(dto.getName());
+        product.setVersion(dto.getVersion());
+        product.setDimensions(dto.getDimensions());
+        product.setWeightInGrammes(dto.getWeightInGrammes());
+        return productDao.save(product);
     }
 }
