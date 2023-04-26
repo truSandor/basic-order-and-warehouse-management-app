@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ProductDao extends JpaRepository<Product, Long> {
-    List<Product> findAllByIdExistsOrderByNameAscVersionAsc();
+    List<Product> findAllByIdNotNullOrderByNameAscVersionAsc();
 
 }

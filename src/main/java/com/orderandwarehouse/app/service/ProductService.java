@@ -17,7 +17,7 @@ public class ProductService {
     private final ProductDao productDao;
 
     public List<Product> getAll() {
-        return productDao.findAllByIdExistsOrderByNameAscVersionAsc();
+        return productDao.findAllByIdNotNullOrderByNameAscVersionAsc();
     }
 
     public Optional<Product> getById(Long id) {

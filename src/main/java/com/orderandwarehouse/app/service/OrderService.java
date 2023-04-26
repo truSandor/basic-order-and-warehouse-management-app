@@ -15,6 +15,6 @@ public class OrderService {
     private final ProductDao productDao;
 
     public List<Order> getAll() {
-        return orderDao.findAllByVisibleTrueOrderByDateReceivedDesc();
+        return orderDao.findAllByIdNotNullOrderByDateReceived();
     }
 }

@@ -21,4 +21,4 @@ values (1, 1, 10, 10, 98, false);
 insert into storage_unit ("column", "row", shelf, component_id, quantity, "full")
 values (1, 2, 1, 11, 10, false);
 insert into storage_unit ("column", "row", shelf, "full")
-values (1, 2, 2, false, false);
+values (1, 2, 2, false);
