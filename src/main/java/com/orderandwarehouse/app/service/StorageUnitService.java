@@ -1,14 +1,14 @@
 package com.orderandwarehouse.app.service;
 
-import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
+import com.orderandwarehouse.app.model.dto.StorageUnitDto;
+import com.orderandwarehouse.app.repository.ComponentDao;
 import com.orderandwarehouse.app.repository.StorageUnitDao;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,9 +17,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StorageUnitService {
     private final StorageUnitDao storageUnitDao;
+    private final ComponentDao componentDao;
 
     public List<StorageUnit> getAll() {
-        return storageUnitDao.findAllByVisibleTrueOrderByIdAsc();
+        return storageUnitDao.findAllByIdNotNullOrderByRowAscColumnAscShelfAsc();
     }
 
     public Optional<StorageUnit> getById(Long id) {
@@ -31,38 +32,25 @@ public class StorageUnitService {
     }
 
 
-    public StorageUnit update(Long id, @Valid StorageUnit storageUnit) {
-        StorageUnit storageUnitFromDb = storageUnitDao.findByIdAndVisibleTrue(id).orElseThrow(NoSuchElementException::new);
-        storageUnit.setId(storageUnitFromDb.getId());
-        storageUnit.setComponent(storageUnitFromDb.getComponent());
+    public StorageUnit update(Long id, StorageUnitDto dto) {
+        StorageUnit storageUnit = storageUnitDao.findById(id).orElseThrow(NoSuchElementException::new);
+        Component component = componentDao.findById(dto.getComponentId())
+                .orElseThrow(
+                        () -> new NoSuchElementException(
+                                String.format("Component '%d' not found!", dto.getComponentId())
+                        ));
+        storageUnit.setComponent(component);
+        storageUnit.setQuantity(dto.getQuantity());
+        storageUnit.setFull(dto.isFull());
         return storageUnitDao.save(storageUnit);
     }
 
-    public boolean softDelete(Long id) throws SQLException {
-        Component component = storageUnitDao.findById(id)
-                .map(StorageUnit::getComponent)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Component '%d' not found!", id)));
-        if (component == null) {
-            Integer linesModifiedCount = storageUnitDao.setInvisibleById(id);
-            switch (linesModifiedCount) {
-                case 0 -> throw new NoSuchElementException(String.format("Storage unit '%d' not found!", id));
-                case 1 -> {
-                    return true;
-                }
-                //should never happen, because IDs are unique
-                default ->
-                        throw new SQLException(String.format("Error multiple storage unit with the same ID '%d' updated!", id));
-            }
-        } else {
-            throw new StorageUnitStillInUseException(
-                    String.format(
-                            "Component '%d' found in storage unit '%d'. Empty the storage unit before deleting!",
-                            id,
-                            component.getId()));
-        }
+    public void delete(Long id) {
+        storageUnitDao.deleteById(id);
+        //check commit 9ea0e309 if you want to reroll
     }
 
     public List<StorageUnit> getAllByComponentId(Long componentId) {
-        return storageUnitDao.findAllByVisibleTrueAndComponent_Id(componentId);
+        return storageUnitDao.findAllByComponent_Id(componentId);
     }
 }

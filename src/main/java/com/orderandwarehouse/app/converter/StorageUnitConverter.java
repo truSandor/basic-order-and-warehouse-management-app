@@ -16,12 +16,9 @@ public class StorageUnitConverter {
 
     public StorageUnit dtoToEntity(StorageUnitDto dto) {
         StorageUnit entity = new StorageUnit();
-        entity.setRow(dto.getRow());
-        entity.setColumn(dto.getColumn());
-        entity.setShelf(dto.getShelf());
         if (dto.getComponentId() != null) {
             entity.setComponent(
-                    componentDao.findByIdAndVisibleTrue(dto.getComponentId())
+                    componentDao.findById(dto.getComponentId())
                             .orElseThrow(() ->
                                     new NoSuchElementException(
                                             String.format("Component '%d' not found!", dto.getComponentId()

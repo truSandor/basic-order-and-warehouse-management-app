@@ -40,12 +40,16 @@ public class StorageUnitController {
     //we can use it to change component and quantity too
     @PutMapping("/{id}")
     public ResponseEntity<StorageUnit> update(@PathVariable Long id, @RequestBody StorageUnitDto storageUnitDto) {
-        return new ResponseEntity<>(service.update(id, converter.dtoToEntity(storageUnitDto)), HttpStatus.OK);
+        return new ResponseEntity<>(service.update(id, storageUnitDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus softDelete(@PathVariable Long id) throws SQLException {
-        return service.softDelete(id) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    public HttpStatus delete(@PathVariable Long id) throws SQLException {
+        service.delete(id);
+        //todo check what happens if i try to delete one that is in use
+        //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
+        return HttpStatus.OK;
+
     }
 
     @GetMapping("/component/{component_id}")
