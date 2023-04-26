@@ -37,7 +37,15 @@ public class ProductController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody ProductDto productDto){
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody ProductDto productDto) {
         return new ResponseEntity<>(service.update(id, productDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public HttpStatus delete(@PathVariable Long id) {
+        service.delete(id);
+        //todo check what happens if i try to delete one that is in use
+        //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
+        return HttpStatus.OK;
     }
 }
