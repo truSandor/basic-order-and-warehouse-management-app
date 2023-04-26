@@ -28,8 +28,6 @@ public class Product {
     @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String dimensions;
     private Integer weightInGrammes;
-    @Column(name = "[visible]")
-    private boolean visible = true;
     @OneToMany(mappedBy = "product")
     private List<PartsListRow> partsList;
     @OneToMany(mappedBy = "product")
@@ -37,7 +35,7 @@ public class Product {
 
     public boolean hasNoActiveOrders() {
         if (orders != null) {
-            return orders.stream().filter(o -> o.getStatus().equals(Status.COMPLETED) || !o.isVisible()).count() == orders.size();
+            return orders.stream().filter(o -> o.getStatus().equals(Status.COMPLETED)).count() == orders.size();
         }
         return true;
     }

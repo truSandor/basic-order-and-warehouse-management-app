@@ -26,6 +26,4 @@ public class Order {
     private LocalDateTime dateCompleted;
     @NotNull
     private Status status;
-    @Column(name = "[visible]")
-    private boolean visible = true;
 }

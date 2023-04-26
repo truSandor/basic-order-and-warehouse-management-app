@@ -48,6 +48,4 @@ public class Component {
     @OneToMany(mappedBy = "component")
     @JsonIgnore
     private List<PartsListRow> partsListRows;
-    @Column(name="[visible]")
-    private boolean visible = true;
 }

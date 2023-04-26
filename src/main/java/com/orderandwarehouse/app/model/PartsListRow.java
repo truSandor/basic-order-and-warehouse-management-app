@@ -34,6 +34,4 @@ public class PartsListRow {
     private LocalDateTime dateAdded;
     @NotNull
     private LocalDateTime dateModified;
-    @Column(name="[visible]")
-    private boolean visible = true;
 }

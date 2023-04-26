@@ -27,6 +27,4 @@ public class StorageUnit {
     private Double quantity;
     @Column(name = "[full]")
     private boolean full;
-    @Column(name="[visible]")
-    private boolean visible = true;
 }
