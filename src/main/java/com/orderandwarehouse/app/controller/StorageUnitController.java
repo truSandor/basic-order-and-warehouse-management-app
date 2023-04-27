@@ -37,19 +37,24 @@ public class StorageUnitController {
         return new ResponseEntity<>(service.add(converter.dtoToEntity(storageUnitDto)), HttpStatus.OK);
     }
 
-    //we can use it to change component and quantity too
+    //we can use it to change component, quantity, full
+    //intended: doesn't update row/column/shelf
     @PutMapping("/{id}")
     public ResponseEntity<StorageUnit> update(@PathVariable Long id, @RequestBody StorageUnitDto storageUnitDto) {
         return new ResponseEntity<>(service.update(id, storageUnitDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id) throws SQLException {
-        service.delete(id);
-        //todo check what happens if i try to delete one that is in use -->deletes it, needs fixing!
-        //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
-        return HttpStatus.OK;
-
+    public HttpStatus delete(@PathVariable Long id) {
+        /*
+        TODO check if ID exists? OK : NOT_FOUND
+                if ID exists check if it's in use? StorageUnitStillInUseException : OK
+        */
+        if (service.getById(id).isPresent()) {
+            service.delete(id);
+            return HttpStatus.OK;
+        }
+        return HttpStatus.NOT_FOUND;
     }
 
     @GetMapping("/component/{component_id}")

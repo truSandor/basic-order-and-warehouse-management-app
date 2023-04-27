@@ -31,7 +31,7 @@ public class StorageUnitService {
         return storageUnitDao.save(storageUnit);
     }
 
-
+    //intended: doesn't update row/column/shelf
     public StorageUnit update(Long id, StorageUnitDto dto) {
         StorageUnit storageUnit = storageUnitDao.findById(id).orElseThrow(NoSuchElementException::new);
         Component component = componentDao.findById(dto.getComponentId())
