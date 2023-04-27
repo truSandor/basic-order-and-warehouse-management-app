@@ -48,9 +48,14 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public HttpStatus delete(@PathVariable Long id) {
-        service.delete(id);
-        //todo check what happens if i try to delete one that is in use
-        //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
-        return HttpStatus.OK;
+       /*
+        TODO check if ID exists? OK : NOT_FOUND
+                if ID exists check if it's in use? StorageUnitStillInUseException : OK
+        */
+        if (service.getById(id).isPresent()) {
+            service.delete(id);
+            return HttpStatus.OK;
+        }
+        return HttpStatus.NOT_FOUND;
     }
 }
