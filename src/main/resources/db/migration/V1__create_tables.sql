@@ -21,10 +21,10 @@ create table if not exists "order"
     product_id     bigint,
     quantity       integer,
     status         smallint,
-    date_received  timestamp(6),
-    deadline       timestamp(6),
-    date_started   timestamp(6),
-    date_completed timestamp(6),
+    date_received  timestamp(2),
+    deadline       timestamp(2),
+    date_started   timestamp(2),
+    date_completed timestamp(2),
     primary key (id)
 );
 
@@ -36,8 +36,8 @@ create table if not exists parts_list_row
     quantity      float(53),
     unit          varchar(4),
     "comment"     varchar(1000),
-    date_added    timestamp(6),
-    date_modified timestamp(6),
+    date_added    timestamp(2),
+    date_modified timestamp(2),
     primary key (id)
 );
 
