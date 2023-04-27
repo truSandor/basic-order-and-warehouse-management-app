@@ -1,5 +1,8 @@
 package com.orderandwarehouse.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "product")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
 
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
@@ -29,16 +33,10 @@ public class Product {
     private String dimensions;
     private Integer weightInGrammes;
     @OneToMany(mappedBy = "product")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsList;
     @OneToMany(mappedBy = "product")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Order> orders;
-
-    public boolean hasNoActiveOrders() {
-        if (orders != null) {
-            return orders.stream().filter(o -> o.getStatus().equals(Status.COMPLETED)).count() == orders.size();
-        }
-        return true;
-    }
-
 
 }
