@@ -18,7 +18,7 @@ public class Order {
     @ManyToOne
     private Product product;
     @NotNull
-    private Long quantity;
+    private Integer quantity;
     @NotNull
     private LocalDateTime dateReceived;
     private LocalDateTime deadline;
