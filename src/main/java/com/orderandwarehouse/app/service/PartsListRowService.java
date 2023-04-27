@@ -40,7 +40,7 @@ public class PartsListRowService {
     }
 
     public void deleteAllByProductId(Long productId){
-        partsListRowDao.deleteAllByProduct_Id(productId);
+        partsListRowDao.deleteByProduct_Id(productId);
     }
 
     private static void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRow> partsList) {
