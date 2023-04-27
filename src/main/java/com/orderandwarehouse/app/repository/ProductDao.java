@@ -10,4 +10,6 @@ import java.util.List;
 public interface ProductDao extends JpaRepository<Product, Long> {
     List<Product> findAllByIdNotNullOrderByNameAscVersionAsc();
 
+    List<Product> findAllByNameContainingIgnoreCase(String nameLike);
+
 }

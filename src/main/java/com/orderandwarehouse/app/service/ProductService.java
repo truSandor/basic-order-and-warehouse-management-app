@@ -41,4 +41,8 @@ public class ProductService {
         productDao.deleteById(id);
         //check commit 9ea0e309 if you want to reroll
     }
+
+    public List<Product> getByNameLike(String nameLike) {
+        return productDao.findAllByNameContainingIgnoreCase(nameLike);
+    }
 }

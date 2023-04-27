@@ -31,6 +31,11 @@ public class ProductController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping(params = "nameLike")
+    public ResponseEntity<List<Product>> getByNameLike(@RequestParam String nameLike) {
+        return new ResponseEntity<>(service.getByNameLike(nameLike), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Product> add(@RequestBody ProductDto productDto) {
         return new ResponseEntity<>(service.add(converter.dtoToEntity(productDto)), HttpStatus.OK);
