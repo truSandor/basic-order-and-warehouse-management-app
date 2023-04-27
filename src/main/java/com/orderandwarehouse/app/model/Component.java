@@ -1,6 +1,8 @@
 package com.orderandwarehouse.app.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "component")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Component {
 
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
@@ -43,9 +46,9 @@ public class Component {
     @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String traderComponentId;
     @OneToMany(mappedBy = "component")
-    @JsonIgnore
+    @JsonIdentityReference(alwaysAsId = true)
     private List<StorageUnit> storageUnits;
     @OneToMany(mappedBy = "component")
-    @JsonIgnore
+    @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsListRows;
 }
