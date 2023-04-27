@@ -46,6 +46,7 @@ public class ComponentController {
         service.delete(id);
         //todo check what happens if i try to delete one that is in use
         //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
+        //todo return not_found if doesn't exist
         return HttpStatus.OK;
     }
 

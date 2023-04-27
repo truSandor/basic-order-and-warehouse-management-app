@@ -33,7 +33,6 @@ public class ComponentService {
         component.setId(componentFromDb.getId());
         component.setPartsListRows(componentFromDb.getPartsListRows());
         component.setStorageUnits(componentFromDb.getStorageUnits());
-        //todo check if this saves a new entity/dbLine, or updates the existing one
         return componentDao.save(component);
     }
 
