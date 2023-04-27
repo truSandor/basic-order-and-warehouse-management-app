@@ -23,7 +23,7 @@ public class OrderService {
         return orderDao.findById(id);
     }
 
-    public List<Order> getByNameLike(String nameLike) {
+    public List<Order> getByProductNameLike(String nameLike) {
         return orderDao.findAllByProduct_NameIsContainingIgnoreCase(nameLike);
     }
 

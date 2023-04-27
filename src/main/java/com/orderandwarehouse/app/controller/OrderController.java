@@ -25,8 +25,8 @@ public class OrderController {
     }
 
     @GetMapping(params = "nameLike")
-    public ResponseEntity<List<Order>> getByNameLike(@RequestParam String nameLike) {
-        return new ResponseEntity<>(service.getByNameLike(nameLike), HttpStatus.OK);
+    public ResponseEntity<List<Order>> getByProductNameLike(@RequestParam String nameLike) {
+        return new ResponseEntity<>(service.getByProductNameLike(nameLike), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
