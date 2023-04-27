@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderDao extends JpaRepository<Order, Long> {
     List<Order> findAllByIdNotNullOrderByDateReceived();
+
+    List<Order> findAllByProduct_NameIsContainingIgnoreCase(String nameLike);
+
 }

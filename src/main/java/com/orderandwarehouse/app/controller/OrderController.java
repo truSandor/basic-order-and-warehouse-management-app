@@ -1,14 +1,13 @@
 package com.orderandwarehouse.app.controller;
 
+import com.orderandwarehouse.app.converter.OrderConverter;
 import com.orderandwarehouse.app.model.Order;
+import com.orderandwarehouse.app.model.dto.OrderDto;
 import com.orderandwarehouse.app.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,10 +17,39 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class OrderController {
     private final OrderService service;
+    private final OrderConverter converter;
 
     @GetMapping
-    private ResponseEntity<List<Order>> getAll() {
+    public ResponseEntity<List<Order>> getAll() {
         return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping(params = "nameLike")
+    public ResponseEntity<List<Order>> getByNameLike(@RequestParam String nameLike) {
+        return new ResponseEntity<>(service.getByNameLike(nameLike), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getById(@PathVariable Long id) {
+        return service.getById(id)
+                .map(o -> new ResponseEntity<>(o, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping
+    public ResponseEntity<Order> add(@RequestBody OrderDto orderDto) {
+        return new ResponseEntity<>(service.add(converter.dtoToEntity(orderDto)), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody OrderDto orderDto) {
+        return new ResponseEntity<>(service.update(id, converter.dtoToEntity(orderDto)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public HttpStatus delete(@PathVariable Long id) {
+        service.delete(id);
+        return HttpStatus.OK;
     }
 
 }
