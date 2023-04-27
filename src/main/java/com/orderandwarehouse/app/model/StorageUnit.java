@@ -13,8 +13,8 @@ public class StorageUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIdentityReference
-    @ManyToOne()
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
     private Component component;
     @NotNull
     @Column(name = "[row]")

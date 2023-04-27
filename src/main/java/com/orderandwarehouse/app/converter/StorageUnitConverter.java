@@ -27,6 +27,9 @@ public class StorageUnitConverter {
                             )
             );
         }
+        entity.setRow(dto.getRow());
+        entity.setColumn(dto.getColumn());
+        entity.setShelf(dto.getShelf());
         entity.setQuantity(dto.getQuantity());
         entity.setFull(dto.isFull());
         return entity;

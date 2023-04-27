@@ -46,7 +46,7 @@ public class StorageUnitController {
     @DeleteMapping("/{id}")
     public HttpStatus delete(@PathVariable Long id) throws SQLException {
         service.delete(id);
-        //todo check what happens if i try to delete one that is in use
+        //todo check what happens if i try to delete one that is in use -->deletes it, needs fixing!
         //todo create exception handler, check if this returns NOT_FOUND or OK if exception happens
         return HttpStatus.OK;
 
