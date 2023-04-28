@@ -39,4 +39,23 @@ public class Product {
     @JsonIdentityReference(alwaysAsId = true)
     private List<Order> orders;
 
+    public boolean isInUse() {
+        return hasPartsList() || hasActiveOrders();
+    }
+
+    public boolean hasActiveOrders() {
+        return orders != null && orders.stream().anyMatch(Order::isActive);
+    }
+
+    public List<Long> getDeletableOrdersIds() {
+        if (orders == null) return List.of();
+        return orders.stream()
+                .filter(o -> !o.isActive())
+                .map(Order::getId)
+                .toList();
+    }
+
+    public boolean hasPartsList() {
+        return partsList != null && !partsList.isEmpty();
+    }
 }
