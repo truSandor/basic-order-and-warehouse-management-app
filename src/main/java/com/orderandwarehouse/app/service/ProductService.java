@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.exception.ProductStillInUseException;
 import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.dto.ProductDto;
 import com.orderandwarehouse.app.repository.ProductDao;
@@ -38,8 +39,10 @@ public class ProductService {
     }
 
     public void delete(Long id) {
+        Product product = productDao.findById(id).orElseThrow(NoSuchElementException::new);
+        if (product.isInUse())
+            throw new ProductStillInUseException(id, product.getDeletableOrdersIds(), product.hasPartsList());
         productDao.deleteById(id);
-        //check commit 9ea0e309 if you want to reroll
     }
 
     public List<Product> getByNameLike(String nameLike) {
