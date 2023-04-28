@@ -33,7 +33,7 @@ public class OrderService {
 
     public Order update(Long id, @Valid Order order) {
         Order orderFromDb = orderDao.findById(id).orElseThrow(NoSuchElementException::new);
-        order.setId(orderFromDb.getId()); //todo check if it updates the original, or tries to create a new line with same id --> fails
+        order.setId(orderFromDb.getId());
         return orderDao.save(order);
     }
 
