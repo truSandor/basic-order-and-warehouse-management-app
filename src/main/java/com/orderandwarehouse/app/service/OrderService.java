@@ -41,7 +41,7 @@ public class OrderService {
 
     public void delete(Long id) {
         Order order = orderDao.findById(id).orElseThrow(NoSuchElementException::new);
-        if (order.getStatus().equals(Status.IN_PROGRESS)) throw new OrderInProgressException(id);
+        if (order.isActive()) throw new OrderInProgressException(id, order.getStatus());
         orderDao.deleteById(id);
     }
 }
