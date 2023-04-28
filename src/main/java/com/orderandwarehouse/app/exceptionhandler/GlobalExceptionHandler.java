@@ -61,8 +61,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(OrderInProgressException.class)
     protected ResponseEntity<Object> HandleOrderInProgressException(OrderInProgressException ex) {
         Map<String, String> body = new HashMap<>();
-        body.put("Message", ex.getMessage());
-        body.put("OrderId", ex.getOrderId().toString());
+        body.put("message", ex.getMessage());
+        body.put("orderId", ex.getOrderId().toString());
+        body.put("status", ex.getStatus().toString());
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
 }
