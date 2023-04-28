@@ -39,11 +39,9 @@ public class ComponentService {
 
     public void delete(Long id) {
         Component component = componentDao.findById(id).orElseThrow(NoSuchElementException::new);
-        if (component.isInUse()) {
-                    throw new ComponentStillInUseException(id, component.getStorageUnitIds(), component.getProductIds());
-                }
-            componentDao.deleteById(id);
-
+        if (component.isInUse())
+            throw new ComponentStillInUseException(id, component.getStorageUnitIds(), component.getProductIds());
+        componentDao.deleteById(id);
     }
 
     public List<Component> getByNameLike(String nameLike) {
