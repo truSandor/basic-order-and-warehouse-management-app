@@ -47,16 +47,9 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id) {
-         /*
-        TODO check if ID exists? OK : NOT_FOUND
-                if ID exists check if it's in use? StorageUnitStillInUseException : OK
-        */
-        if (service.getById(id).isPresent()) {
-            service.delete(id);
-            return HttpStatus.OK;
-        }
-        return HttpStatus.NOT_FOUND;
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
+        service.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

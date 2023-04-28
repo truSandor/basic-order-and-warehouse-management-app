@@ -1,6 +1,8 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.exception.OrderInProgressException;
 import com.orderandwarehouse.app.model.Order;
+import com.orderandwarehouse.app.model.Status;
 import com.orderandwarehouse.app.repository.OrderDao;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,8 @@ public class OrderService {
     }
 
     public void delete(Long id) {
+        Order order = orderDao.findById(id).orElseThrow(NoSuchElementException::new);
+        if (order.getStatus().equals(Status.IN_PROGRESS)) throw new OrderInProgressException(id);
         orderDao.deleteById(id);
     }
 }

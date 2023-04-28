@@ -1,6 +1,7 @@
 package com.orderandwarehouse.app.exceptionhandler;
 
 import com.orderandwarehouse.app.exception.ComponentStillInUseException;
+import com.orderandwarehouse.app.exception.OrderInProgressException;
 import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("Message", ex.getMessage());
         body.put("StorageUnitId", ex.getStorageUnitId().toString());
         body.put("ProductIds", ex.getComponentId().toString());
+        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(OrderInProgressException.class)
+    protected ResponseEntity<Object> HandleOrderInProgressException(OrderInProgressException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("Message", ex.getMessage());
+        body.put("OrderId", ex.getOrderId().toString());
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
 }
