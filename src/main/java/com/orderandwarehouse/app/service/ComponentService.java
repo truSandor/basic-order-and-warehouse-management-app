@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.exception.ComponentStillInUseException;
 import com.orderandwarehouse.app.model.*;
 import com.orderandwarehouse.app.repository.ComponentDao;
 import jakarta.validation.Valid;
@@ -37,8 +38,12 @@ public class ComponentService {
     }
 
     public void delete(Long id) {
-        componentDao.deleteById(id); //todo: check what happens if we try to delete a Component with Storage-Unit or PartsListRows
-        //check commit 9ea0e309 if you want to reroll
+        Component component = componentDao.findById(id).orElseThrow(NoSuchElementException::new);
+        if (component.isInUse()) {
+                    throw new ComponentStillInUseException(id, component.getStorageUnitIds(), component.getProductIds());
+                }
+            componentDao.deleteById(id);
+
     }
 
     public List<Component> getByNameLike(String nameLike) {
