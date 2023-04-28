@@ -31,4 +31,8 @@ public class Order {
     private LocalDateTime dateCompleted;
     @NotNull
     private Status status;
+
+    public boolean isActive() {
+        return status.equals(Status.IN_PROGRESS) || status.equals(Status.OVERDUE);
+    }
 }
