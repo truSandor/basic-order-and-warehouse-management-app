@@ -36,26 +36,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> HandleNoSuchElementException(NoSuchElementException ex) {
         Map<String, String> body = new HashMap<>();
         String message = ex.getMessage() != null ? ex.getMessage() : "Record not found!";
-        body.put("Message", message);
+        body.put("message", message);
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ComponentStillInUseException.class)
     protected ResponseEntity<Object> handleComponentStillInUseException(ComponentStillInUseException ex) {
         Map<String, String> body = new HashMap<>();
-        body.put("Message", ex.getMessage());
-        body.put("ComponentId", ex.getComponentId().toString());
-        body.put("StorageUnitIds", ex.getStorageUnitIds().toString());
-        body.put("ProductIds", ex.getProductIds().toString());
+        body.put("message", ex.getMessage());
+        body.put("componentId", ex.getComponentId().toString());
+        body.put("storageUnitIds", ex.getStorageUnitIds().toString());
+        body.put("productIds", ex.getProductIds().toString());
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(StorageUnitStillInUseException.class)
     protected ResponseEntity<Object> handleStorageUnitStillInUseException(StorageUnitStillInUseException ex) {
         Map<String, String> body = new HashMap<>();
-        body.put("Message", ex.getMessage());
-        body.put("StorageUnitId", ex.getStorageUnitId().toString());
-        body.put("ProductIds", ex.getComponentId().toString());
+        body.put("message", ex.getMessage());
+        body.put("storageUnitId", ex.getStorageUnitId().toString());
+        body.put("productIds", ex.getComponentId().toString());
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
 
