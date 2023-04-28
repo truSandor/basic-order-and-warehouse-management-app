@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ComponentDto {
-    //todo check if adding ID throws exception when adding new component
     private String name;
     private Type type;
     private Double primaryValue;
