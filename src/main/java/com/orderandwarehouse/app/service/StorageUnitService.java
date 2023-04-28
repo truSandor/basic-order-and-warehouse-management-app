@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.dto.StorageUnitDto;
@@ -46,8 +47,10 @@ public class StorageUnitService {
     }
 
     public void delete(Long id) {
+        StorageUnit storageUnit = storageUnitDao.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!storageUnit.isEmpty())
+            throw new StorageUnitStillInUseException(id, storageUnit.getComponent().getId(), storageUnit.getQuantity());
         storageUnitDao.deleteById(id);
-        //check commit 9ea0e309 if you want to reroll
     }
 
     public List<StorageUnit> getAllByComponentId(Long componentId) {

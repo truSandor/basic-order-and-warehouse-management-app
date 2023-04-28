@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -45,16 +44,9 @@ public class StorageUnitController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable Long id) {
-        /*
-        TODO check if ID exists? OK : NOT_FOUND
-                if ID exists check if it's in use? StorageUnitStillInUseException : OK
-        */
-        if (service.getById(id).isPresent()) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
             service.delete(id);
-            return HttpStatus.OK;
-        }
-        return HttpStatus.NOT_FOUND;
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/component/{component_id}")

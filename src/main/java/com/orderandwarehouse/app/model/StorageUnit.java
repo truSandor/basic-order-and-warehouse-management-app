@@ -30,4 +30,8 @@ public class StorageUnit {
     private Double quantity;
     @Column(name = "[full]")
     private boolean full;
+
+    public boolean isEmpty() {
+        return component == null && (quantity == null || quantity == 0);
+    }
 }
