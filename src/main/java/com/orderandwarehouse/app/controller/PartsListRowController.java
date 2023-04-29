@@ -24,17 +24,17 @@ public class PartsListRowController {
     }
 
     @PostMapping
-    public ResponseEntity<PartsListRow> add(@RequestBody /*@Valid*/ PartsListRowDto dto) {
+    public ResponseEntity<PartsListRow> add(@RequestBody @Valid PartsListRowDto dto) {
         return new ResponseEntity<>(service.add(dto), HttpStatus.OK);
     }
 
     @PostMapping("/{productId}")
-    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable Long productId, @RequestBody /*@Valid*/ List<PartsListRowDto> partsList) {
+    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable Long productId, @RequestBody @Valid List<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.addAllToProduct(productId, partsList), HttpStatus.OK);
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable Long productId, @RequestBody /*@Valid*/ Set<PartsListRowDto> partsList) {
+    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable Long productId, @RequestBody @Valid Set<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.updateAllBelongingToProduct(productId, partsList), HttpStatus.OK);
     }
 
