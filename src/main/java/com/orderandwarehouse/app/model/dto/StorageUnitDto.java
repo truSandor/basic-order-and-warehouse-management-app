@@ -4,9 +4,6 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class StorageUnitDto {
     private Long componentId;
     private Double quantity;

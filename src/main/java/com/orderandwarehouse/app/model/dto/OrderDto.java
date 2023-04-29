@@ -7,9 +7,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class OrderDto {
     private Long  productId;
     private Integer quantity;

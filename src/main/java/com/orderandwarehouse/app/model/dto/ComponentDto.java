@@ -7,9 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class ComponentDto {
     private String name;
     private Type type;
