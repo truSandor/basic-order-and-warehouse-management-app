@@ -30,7 +30,7 @@ public class ComponentService {
     }
 
     public Component update(Long id, @Valid Component component) {
-        Component componentFromDb = componentDao.findById(id).orElseThrow(NoSuchElementException::new);
+        Component componentFromDb = componentDao.findById(id).orElseThrow();
         component.setId(componentFromDb.getId());
         component.setPartsListRows(componentFromDb.getPartsListRows());
         component.setStorageUnits(componentFromDb.getStorageUnits());
@@ -38,7 +38,7 @@ public class ComponentService {
     }
 
     public void delete(Long id) {
-        Component component = componentDao.findById(id).orElseThrow(NoSuchElementException::new);
+        Component component = componentDao.findById(id).orElseThrow();
         if (component.isInUse())
             throw new ComponentStillInUseException(id, component.getStorageUnitIds(), component.getProductIds());
         componentDao.deleteById(id);
