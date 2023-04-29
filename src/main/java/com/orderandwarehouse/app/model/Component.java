@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -52,16 +53,19 @@ public class Component {
     @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsListRows;
 
+    @JsonIgnore
     public List<Long> getStorageUnitIds() {
         if (storageUnits == null) return List.of();
         return storageUnits.stream().map(StorageUnit::getId).toList();
     }
 
+    @JsonIgnore
     public List<Long> getProductIds() {
         if (partsListRows == null) return List.of();
         return partsListRows.stream().map(plr -> plr.getProduct().getId()).toList();
     }
 
+    @JsonIgnore
     public boolean isInUse() {
         return (storageUnits != null && !storageUnits.isEmpty()) ||
                 (partsListRows != null && !partsListRows.isEmpty());

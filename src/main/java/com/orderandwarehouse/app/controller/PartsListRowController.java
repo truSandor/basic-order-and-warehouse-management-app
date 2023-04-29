@@ -1,6 +1,7 @@
 package com.orderandwarehouse.app.controller;
 
 import com.orderandwarehouse.app.model.PartsListRow;
+import com.orderandwarehouse.app.model.dto.PartsListRowDto;
 import com.orderandwarehouse.app.service.PartsListRowService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

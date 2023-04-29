@@ -33,11 +33,15 @@ public class PartsListRow {
     private Double quantity;
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String unit = "pcs";
-    @Column(name="[comment]")
+    @Column(name = "[comment]")
     @Size(max = 1000, message = MAX_SIZE_MESSAGE)
     private String Comment;
     @NotNull
     private LocalDateTime dateAdded;
     @NotNull
     private LocalDateTime dateModified;
+
+    public String getComponentName(){
+        return component.getName();
+    }
 }

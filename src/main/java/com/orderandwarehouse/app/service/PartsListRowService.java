@@ -1,6 +1,8 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.converter.PartsListRowConverter;
 import com.orderandwarehouse.app.model.PartsListRow;
+import com.orderandwarehouse.app.model.dto.PartsListRowDto;
 import com.orderandwarehouse.app.repository.PartsListRowDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,9 +15,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PartsListRowService {
     private final PartsListRowDao partsListRowDao;
+    private final PartsListRowConverter converter;
 
     public List<PartsListRow> getPartsListByProductId(Long productId) {
-        return partsListRowDao.findAllByProductId(productId);
+        return partsListRowDao.findAllByProductId(productId) /*.stream().map(converter::entityToDto).toList()*/;
     }
 
     public PartsListRow add(PartsListRow partsListRow) {
@@ -35,11 +38,11 @@ public class PartsListRowService {
         return partsListRowDao.saveAll(partsList);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         partsListRowDao.deleteById(id);
     }
 
-    public void deleteAllByProductId(Long productId){
+    public void deleteAllByProductId(Long productId) {
         partsListRowDao.deleteByProduct_Id(productId);
     }
 

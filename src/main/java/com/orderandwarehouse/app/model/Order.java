@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ public class Order {
     @NotNull
     private Status status;
 
+    @JsonIgnore
     public boolean isActive() {
         return status.equals(Status.IN_PROGRESS) || status.equals(Status.OVERDUE);
     }

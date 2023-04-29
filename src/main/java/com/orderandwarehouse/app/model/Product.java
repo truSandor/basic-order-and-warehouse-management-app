@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -39,14 +40,17 @@ public class Product {
     @JsonIdentityReference(alwaysAsId = true)
     private List<Order> orders;
 
+    @JsonIgnore
     public boolean isInUse() {
         return hasPartsList() || hasActiveOrders();
     }
 
+    @JsonIgnore
     public boolean hasActiveOrders() {
         return orders != null && orders.stream().anyMatch(Order::isActive);
     }
 
+    @JsonIgnore
     public List<Long> getDeletableOrdersIds() {
         if (orders == null) return List.of();
         return orders.stream()
@@ -55,6 +59,7 @@ public class Product {
                 .toList();
     }
 
+    @JsonIgnore
     public boolean hasPartsList() {
         return partsList != null && !partsList.isEmpty();
     }
