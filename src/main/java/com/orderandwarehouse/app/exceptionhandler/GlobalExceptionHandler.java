@@ -73,7 +73,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         body.put("productId", ex.getProductId().toString());
-        body.put("orderIds", ex.getOrderIds().toString());
+        body.put("orderIds", ex.getActiveOrderIds().toString());
         body.put("hasPartsList", String.valueOf(ex.isHasPartsList()));
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
     }
