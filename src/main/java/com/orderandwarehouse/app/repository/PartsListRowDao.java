@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PartsListRowDao extends JpaRepository<PartsListRow, Long> {
@@ -18,4 +19,6 @@ public interface PartsListRowDao extends JpaRepository<PartsListRow, Long> {
     @Modifying(clearAutomatically = true)
     @Query("delete from PartsListRow plr where plr.product.id = :product_id")
     void deleteByProduct_Id(@Param("product_id") Long productId);
+
+    Optional<PartsListRow> findFirstByProductId(Long productId);
 }

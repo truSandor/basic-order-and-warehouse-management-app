@@ -1,7 +1,9 @@
 package com.orderandwarehouse.app.service;
 
 import com.orderandwarehouse.app.converter.PartsListRowConverter;
+import com.orderandwarehouse.app.exception.ProductStillInUseException;
 import com.orderandwarehouse.app.model.PartsListRow;
+import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.dto.PartsListRowDto;
 import com.orderandwarehouse.app.repository.PartsListRowDao;
 import lombok.RequiredArgsConstructor;
@@ -18,36 +20,47 @@ public class PartsListRowService {
     private final PartsListRowConverter converter;
 
     public List<PartsListRow> getPartsListByProductId(Long productId) {
-        return partsListRowDao.findAllByProductId(productId) /*.stream().map(converter::entityToDto).toList()*/;
+        return partsListRowDao.findAllByProductId(productId);
     }
 
-    public PartsListRow add(PartsListRow partsListRow) {
-        return partsListRowDao.save(partsListRow);
+    public PartsListRow add(PartsListRowDto dto) {
+        return partsListRowDao.save(converter.dtoToEntityForAdding(dto));
     }
 
-    public List<PartsListRow> addAllToProduct(Long productId, List<PartsListRow> partsList) {
+    public List<PartsListRow> addAllToProduct(Long productId, List<PartsListRowDto> dtoPartsList) {
+        List<PartsListRow> partsList = dtoPartsList.stream().map(converter::dtoToEntityForAdding).toList();
         checkIfAllPartsListRowsHaveTheGivenProductId(productId, partsList);
-        /*todo new PartsListRows shouldn't have ids, because if they have id then they will be updated
-                or maybe there should be just 1 method for both add and update
-         */
         return partsListRowDao.saveAll(partsList);
     }
 
-    public List<PartsListRow> updateAllBelongingToProduct(Long productId, Set<PartsListRow> partsList) {
+    public List<PartsListRow> updateAllBelongingToProduct(Long productId, Set<PartsListRowDto> dtoPartsList) {
+        List<PartsListRow> partsList = dtoPartsList.stream().map(converter::dtoToEntityForUpdating).toList();
         checkIfAllPartsListRowsHaveTheGivenProductId(productId, partsList);
         return partsListRowDao.saveAll(partsList);
     }
 
     public void delete(Long id) {
+        PartsListRow partsListRow = partsListRowDao.findById(id).orElseThrow();
+        if (partsListRow.getProduct().hasActiveOrders())
+            throw new ProductStillInUseException(
+                    partsListRow.getProduct().getId(),
+                    partsListRow.getProduct().getActiveOrderIds(),
+                    true);
         partsListRowDao.deleteById(id);
     }
 
     public void deleteAllByProductId(Long productId) {
+        Product product = getProductById(productId);
+        if (product.hasActiveOrders()) throw new ProductStillInUseException(productId, product.getActiveOrderIds(), true);
         partsListRowDao.deleteByProduct_Id(productId);
     }
 
-    private static void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRow> partsList) {
+    private Product getProductById(Long productId) {
+        return partsListRowDao.findFirstByProductId(productId).orElseThrow().getProduct();
+    }
+
+    private void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRow> partsList) {
         if (partsList.stream().anyMatch(plr -> !plr.getProduct().getId().equals(productId)))
-            throw new IllegalArgumentException("Not all parts list rows have the same product id!");
+            throw new IllegalArgumentException("Not all parts list rows have the same product id, Or id in path is different!");
     }
 }

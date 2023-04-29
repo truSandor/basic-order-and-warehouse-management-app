@@ -24,40 +24,29 @@ public class PartsListRowController {
     }
 
     @PostMapping
-    //todo needs dto to reference product and components with ids
-    public ResponseEntity<PartsListRow> add(@RequestBody @Valid PartsListRow partsListRow) { //might need a dto or set Components to be represented by Id
-        return new ResponseEntity<>(service.add(partsListRow), HttpStatus.OK);
+    public ResponseEntity<PartsListRow> add(@RequestBody /*@Valid*/ PartsListRowDto dto) {
+        return new ResponseEntity<>(service.add(dto), HttpStatus.OK);
     }
 
     @PostMapping("/{productId}")
-    //todo needs dto to reference product and components with ids
-    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable Long productId, @RequestBody @Valid /*can a list be validated? */ List<PartsListRow> partsList) {
+    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable Long productId, @RequestBody /*@Valid*/ List<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.addAllToProduct(productId, partsList), HttpStatus.OK);
     }
 
     @PutMapping("/{productId}")
-    //todo needs dto to reference product and components with ids
-    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable Long productId, @RequestBody @Valid /*same as above*/ Set<PartsListRow> partsList) {
+    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable Long productId, @RequestBody /*@Valid*/ Set<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.updateAllBelongingToProduct(productId, partsList), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/single/row/{id}")
-    public HttpStatus delete(@PathVariable Long id) {
-         /*
-        TODO check if ID exists? OK : NOT_FOUND
-                if ID exists check if it's in use? StorageUnitStillInUseException : OK
-        */
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
         service.delete(id);
-        return HttpStatus.OK;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")
-    public HttpStatus deleteAllByProductId(@PathVariable Long productId) {
-          /*
-        TODO check if ID exists? OK : NOT_FOUND
-                if ID exists check if it's in use? StorageUnitStillInUseException : OK
-        */
+    public ResponseEntity<HttpStatus> deleteAllByProductId(@PathVariable Long productId) {
         service.deleteAllByProductId(productId);
-        return HttpStatus.OK;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
