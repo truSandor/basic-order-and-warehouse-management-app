@@ -1,21 +1,22 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.converter.ComponentConverter;
 import com.orderandwarehouse.app.exception.ComponentStillInUseException;
 import com.orderandwarehouse.app.model.*;
+import com.orderandwarehouse.app.model.dto.ComponentDto;
 import com.orderandwarehouse.app.repository.ComponentDao;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ComponentService {
     private final ComponentDao componentDao;
+    private final ComponentConverter converter;
 
     public List<Component> getAll() {
         return componentDao.findAll();
@@ -25,16 +26,13 @@ public class ComponentService {
         return componentDao.findById(id);
     }
 
-    public Component add(@Valid Component component) {
-        return componentDao.save(component);
+    public Component add(ComponentDto dto) {
+        return componentDao.save(converter.dtoToEntity(dto));
     }
 
-    public Component update(Long id, @Valid Component component) {
-        Component componentFromDb = componentDao.findById(id).orElseThrow();
-        component.setId(componentFromDb.getId());
-        component.setPartsListRows(componentFromDb.getPartsListRows());
-        component.setStorageUnits(componentFromDb.getStorageUnits());
-        return componentDao.save(component);
+    public Component update(Long id, ComponentDto dto) {
+        dto.setId(id);
+        return componentDao.save(converter.dtoToEntity(dto));
     }
 
     public void delete(Long id) {

@@ -1,9 +1,9 @@
 package com.orderandwarehouse.app.controller;
 
-import com.orderandwarehouse.app.converter.ComponentConverter;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.dto.ComponentDto;
 import com.orderandwarehouse.app.service.ComponentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ComponentController {
     private final ComponentService service;
-    private final ComponentConverter converter;
+
 
     @GetMapping
     public ResponseEntity<List<Component>> getAll() {
@@ -30,15 +30,14 @@ public class ComponentController {
                 .map(c -> new ResponseEntity<>(c, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
     @PostMapping
-    public ResponseEntity<Component> add(@RequestBody ComponentDto componentDto) {
-        return new ResponseEntity<>(service.add(converter.dtoToEntity(componentDto)), HttpStatus.OK);
+    public ResponseEntity<Component> add(@RequestBody @Valid ComponentDto componentDto) {
+        return new ResponseEntity<>(service.add(componentDto), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Component> update(@PathVariable Long id, @RequestBody ComponentDto componentDto) {
-        return new ResponseEntity<>(service.update(id, converter.dtoToEntity(componentDto)), HttpStatus.OK);
+    public ResponseEntity<Component> update(@PathVariable Long id, @RequestBody @Valid ComponentDto componentDto) {
+        return new ResponseEntity<>(service.update(id, componentDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

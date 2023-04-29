@@ -1,24 +1,36 @@
 package com.orderandwarehouse.app.model.dto;
 
 import com.orderandwarehouse.app.model.Type;
+import jakarta.validation.constraints.*;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
 public class ComponentDto {
+
+    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+
+    private Long Id;
+    @Size(max = 120, message = MAX_SIZE_MESSAGE)
+    @NotBlank(message = "Name must not be blank!")
     private String name;
+    @NotNull
     private Type type;
     private Double primaryValue;
+    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String primaryUnit;
     private Double secondaryValue;
+    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String secondaryUnit;
+    @Min(value = 0L)
     private Integer tolerance;
+    @Size(max = 8)
+    @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String packageDimensions;
+    @DecimalMin(value = "0.0")
     private Double weightInGrammes;
+    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String manufacturerId;
+    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String traderComponentId;
-    private List<Long> storageUnitIds;
-    private List<Long> partsListRowsIds;
 }
