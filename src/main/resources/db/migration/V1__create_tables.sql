@@ -66,7 +66,8 @@ create table if not exists storage_unit
 alter table if exists "order"
     add constraint FK__order__product
         foreign key (product_id)
-            references product;
+            references product
+            on delete set null;
 
 alter table if exists parts_list_row
     add constraint FK__parts_list_row__component
