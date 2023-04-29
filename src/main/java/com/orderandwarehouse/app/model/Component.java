@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -46,6 +47,10 @@ public class Component {
     private String manufacturerId;
     @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String traderComponentId;
+    @NotNull
+    private LocalDateTime dateAdded;
+    @NotNull
+    private LocalDateTime dateModified;
     @OneToMany(mappedBy = "component")
     @JsonIdentityReference(alwaysAsId = true)
     private List<StorageUnit> storageUnits;

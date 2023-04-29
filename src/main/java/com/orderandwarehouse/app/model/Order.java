@@ -31,6 +31,8 @@ public class Order {
     private LocalDateTime dateStarted;
     private LocalDateTime dateCompleted;
     @NotNull
+    private LocalDateTime dateModified;
+    @NotNull
     private Status status;
 
     @JsonIgnore

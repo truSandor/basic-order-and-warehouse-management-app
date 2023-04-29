@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(name = "storage_unit")
@@ -30,6 +32,10 @@ public class StorageUnit {
     private Double quantity;
     @Column(name = "[full]")
     private boolean full;
+    @NotNull
+    private LocalDateTime dateAdded;
+    @NotNull
+    private LocalDateTime dateModified;
 
     public boolean isEmpty() {
         return component == null && (quantity == null || quantity == 0);

@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -33,6 +34,10 @@ public class Product {
     @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String dimensions;
     private Integer weightInGrammes;
+    @NotNull
+    private LocalDateTime dateAdded;
+    @NotNull
+    private LocalDateTime dateModified;
     @OneToMany(mappedBy = "product")
     @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsList;
