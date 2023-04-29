@@ -35,7 +35,7 @@ create table if not exists parts_list_row
     component_id  bigint,
     quantity      float(53),
     unit          varchar(4),
-    "comment"     varchar(1000),
+    "comment"     varchar(5000),
     date_added    timestamp(2),
     date_modified timestamp(2),
     primary key (id)

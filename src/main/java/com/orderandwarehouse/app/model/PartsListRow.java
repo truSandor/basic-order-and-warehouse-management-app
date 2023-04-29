@@ -34,7 +34,7 @@ public class PartsListRow {
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String unit = "pcs";
     @Column(name = "[comment]")
-    @Size(max = 1000, message = MAX_SIZE_MESSAGE)
+    @Size(max = 5000, message = MAX_SIZE_MESSAGE)
     private String Comment;
     @NotNull
     private LocalDateTime dateAdded;
