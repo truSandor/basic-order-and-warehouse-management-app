@@ -41,7 +41,7 @@ public class ProductService {
     public void delete(Long id) {
         Product product = productDao.findById(id).orElseThrow(NoSuchElementException::new);
         if (product.isInUse())
-            throw new ProductStillInUseException(id, product.getDeletableOrdersIds(), product.hasPartsList());
+            throw new ProductStillInUseException(id, product.getActiveOrderIds(), product.hasPartsList());
         productDao.deleteById(id);
     }
 

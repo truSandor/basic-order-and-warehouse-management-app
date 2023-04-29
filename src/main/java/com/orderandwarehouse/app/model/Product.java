@@ -51,10 +51,10 @@ public class Product {
     }
 
     @JsonIgnore
-    public List<Long> getDeletableOrdersIds() {
+    public List<Long> getActiveOrderIds() {
         if (orders == null) return List.of();
         return orders.stream()
-                .filter(o -> !o.isActive())
+                .filter(Order::isActive)
                 .map(Order::getId)
                 .toList();
     }
