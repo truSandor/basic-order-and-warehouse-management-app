@@ -27,6 +27,7 @@ create table if not exists "order"
     deadline       timestamp(2),
     date_started   timestamp(2),
     date_completed timestamp(2),
+    date_added     timestamp(2),
     date_modified  timestamp(2),
     primary key (id)
 );

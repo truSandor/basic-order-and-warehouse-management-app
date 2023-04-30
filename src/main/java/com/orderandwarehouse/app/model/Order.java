@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -24,12 +25,15 @@ public class Order {
     @JsonIdentityReference(alwaysAsId = true)
     private Product product;
     @NotNull
+    @Min(value = 1)
     private Integer quantity;
     @NotNull
     private LocalDateTime dateReceived;
     private LocalDateTime deadline;
     private LocalDateTime dateStarted;
     private LocalDateTime dateCompleted;
+    @NotNull
+    private LocalDateTime dateAdded;
     @NotNull
     private LocalDateTime dateModified;
     @NotNull
