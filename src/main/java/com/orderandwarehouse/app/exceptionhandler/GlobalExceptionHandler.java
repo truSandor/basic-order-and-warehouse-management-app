@@ -1,9 +1,7 @@
 package com.orderandwarehouse.app.exceptionhandler;
 
-import com.orderandwarehouse.app.exception.ComponentStillInUseException;
-import com.orderandwarehouse.app.exception.OrderInProgressException;
-import com.orderandwarehouse.app.exception.ProductStillInUseException;
-import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
+import com.orderandwarehouse.app.exception.*;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -15,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -32,12 +31,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<Object> HandleNoSuchElementException(NoSuchElementException ex) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> body = new HashMap<>();
-        String message = ex.getMessage() != null ? ex.getMessage() : "Record not found!";
-        body.put("message", message);
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        ex.getConstraintViolations()
+                .forEach(cv -> body.put(cv.getInvalidValue().toString(), cv.getMessage()));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ResponseEntity<String> HandleNoSuchElementException(NoSuchElementException ex) {
+        return new ResponseEntity<>(ex.getMessage() != null ? ex.getMessage() : "Record not found!", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({NoIdException.class, InputMismatchException.class})
+    protected ResponseEntity<String> HandleOtherExceptions(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ComponentStillInUseException.class)

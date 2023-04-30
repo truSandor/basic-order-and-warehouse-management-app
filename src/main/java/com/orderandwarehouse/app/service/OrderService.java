@@ -1,10 +1,10 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.converter.OrderConverter;
 import com.orderandwarehouse.app.exception.OrderInProgressException;
 import com.orderandwarehouse.app.model.Order;
-import com.orderandwarehouse.app.model.Status;
+import com.orderandwarehouse.app.model.dto.OrderDto;
 import com.orderandwarehouse.app.repository.OrderDao;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderDao orderDao;
+    private final OrderConverter converter;
 
     public List<Order> getAll() {
         return orderDao.findAllByIdNotNullOrderByDateReceived();
@@ -29,14 +30,12 @@ public class OrderService {
         return orderDao.findAllByProduct_NameIsContainingIgnoreCase(nameLike);
     }
 
-    public Order add(@Valid Order order) {
-        return orderDao.save(order);
+    public Order add(OrderDto dto) {
+        return orderDao.save(converter.dtoToEntityForAdding(dto));
     }
 
-    public Order update(Long id, @Valid Order order) {
-        Order orderFromDb = orderDao.findById(id).orElseThrow(NoSuchElementException::new);
-        order.setId(orderFromDb.getId());
-        return orderDao.save(order);
+    public Order update(Long id, OrderDto dto) {
+        return orderDao.save(converter.dtoToEntityForUpdating(dto));
     }
 
     public void delete(Long id) {
