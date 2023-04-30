@@ -1,6 +1,7 @@
 package com.orderandwarehouse.app.model.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,10 +12,13 @@ import lombok.*;
 public class PartsListRowDto {
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
 
+    @Min(value = 1)
     private Long id;
     @NotNull
+    @Min(value = 1)
     private Long productId;
     @NotNull
+    @Min(value = 1)
     private Long componentId;
     @NotNull
     @DecimalMin("0.0")
