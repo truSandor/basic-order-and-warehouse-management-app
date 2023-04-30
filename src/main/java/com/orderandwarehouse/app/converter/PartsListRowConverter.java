@@ -1,5 +1,6 @@
 package com.orderandwarehouse.app.converter;
 
+import com.orderandwarehouse.app.exception.NoIdException;
 import com.orderandwarehouse.app.model.PartsListRow;
 import com.orderandwarehouse.app.model.dto.PartsListRowDto;
 import com.orderandwarehouse.app.repository.ComponentDao;
@@ -27,6 +28,7 @@ public class PartsListRowConverter {
     }
 
     public PartsListRow dtoToEntityForUpdating(PartsListRowDto dto){
+        if (dto.getId() == null) throw new NoIdException(dto.getClass());
         PartsListRow entity = partsListRowDao.findById(dto.getId()).orElseThrow();
         setAttributes(dto, entity);
         return entity;
