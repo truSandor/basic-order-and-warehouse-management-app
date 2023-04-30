@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +62,6 @@ public class PartsListRowService {
 
     private void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRow> partsList) {
         if (partsList.stream().anyMatch(plr -> !plr.getProduct().getId().equals(productId)))
-            throw new IllegalArgumentException("Not all parts list rows have the same product id, Or id in path is different!");
+            throw new InputMismatchException("Not all parts list rows have the same product id, Or id in path is different!");
     }
 }
