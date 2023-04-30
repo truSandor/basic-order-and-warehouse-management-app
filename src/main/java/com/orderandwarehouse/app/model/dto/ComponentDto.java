@@ -10,6 +10,7 @@ public class ComponentDto {
 
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
 
+    @Min(value = 1)
     private Long Id;
     @Size(max = 120, message = MAX_SIZE_MESSAGE)
     @NotBlank(message = "Name must not be blank!")
