@@ -29,14 +29,14 @@ public class PartsListRowService {
     }
 
     public List<PartsListRow> addAllToProduct(Long productId, List<PartsListRowDto> dtoPartsList) {
+        checkIfAllPartsListRowsHaveTheGivenProductId(productId, dtoPartsList);
         List<PartsListRow> partsList = dtoPartsList.stream().map(converter::dtoToEntityForAdding).toList();
-        checkIfAllPartsListRowsHaveTheGivenProductId(productId, partsList);
         return partsListRowDao.saveAll(partsList);
     }
 
     public List<PartsListRow> updateAllBelongingToProduct(Long productId, Set<PartsListRowDto> dtoPartsList) {
+        checkIfAllPartsListRowsHaveTheGivenProductId(productId, dtoPartsList);
         List<PartsListRow> partsList = dtoPartsList.stream().map(converter::dtoToEntityForUpdating).toList();
-        checkIfAllPartsListRowsHaveTheGivenProductId(productId, partsList);
         return partsListRowDao.saveAll(partsList);
     }
 
@@ -60,8 +60,8 @@ public class PartsListRowService {
         return partsListRowDao.findFirstByProductId(productId).orElseThrow().getProduct();
     }
 
-    private void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRow> partsList) {
-        if (partsList.stream().anyMatch(plr -> !plr.getProduct().getId().equals(productId)))
+    private void checkIfAllPartsListRowsHaveTheGivenProductId(Long productId, Collection<PartsListRowDto> partsList) {
+        if (partsList.stream().anyMatch(plr -> !plr.getProductId().equals(productId)))
             throw new InputMismatchException("Not all parts list rows have the same product id, Or id in path is different!");
     }
 }
