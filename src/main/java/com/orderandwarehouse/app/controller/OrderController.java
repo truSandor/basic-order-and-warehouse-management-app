@@ -47,7 +47,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> update(@PathVariable @Min(value = 1) @NotNull Long id, @RequestBody @Valid OrderDto orderDto) {
+    public ResponseEntity<Order> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid OrderDto orderDto) {
         if(!id.equals(orderDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
         return new ResponseEntity<>(service.update(id,orderDto), HttpStatus.OK);
     }
