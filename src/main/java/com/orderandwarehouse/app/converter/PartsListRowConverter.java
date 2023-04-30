@@ -21,25 +21,24 @@ public class PartsListRowConverter {
         PartsListRow entity = new PartsListRow();
         entity.setProduct(productDao.findById(dto.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("Product not found!")));
-        entity.setComponent(componentDao.findById(dto.getComponentId())
-                .orElseThrow(() -> new NoSuchElementException("Component not found!")));
-        entity.setQuantity(dto.getQuantity());
-        entity.setUnit(dto.getUnit());
-        entity.setComment(dto.getComment());
+        setAttributes(dto, entity);
         entity.setDateAdded(LocalDateTime.now());
-        entity.setDateModified(LocalDateTime.now());
         return entity;
     }
 
     public PartsListRow dtoToEntityForUpdating(PartsListRowDto dto){
         PartsListRow entity = partsListRowDao.findById(dto.getId()).orElseThrow();
+        setAttributes(dto, entity);
+        return entity;
+    }
+
+    private void setAttributes(PartsListRowDto dto, PartsListRow entity) {
         entity.setComponent(componentDao.findById(dto.getComponentId())
                 .orElseThrow(() -> new NoSuchElementException("Component not found!")));
         entity.setQuantity(dto.getQuantity());
         entity.setUnit(dto.getUnit());
         entity.setComment(dto.getComment());
         entity.setDateModified(LocalDateTime.now());
-        return entity;
     }
-    
+
 }
