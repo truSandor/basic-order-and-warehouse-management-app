@@ -1,12 +1,10 @@
 package com.orderandwarehouse.app.service;
 
+import com.orderandwarehouse.app.converter.StorageUnitConverter;
 import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
-import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.dto.StorageUnitDto;
-import com.orderandwarehouse.app.repository.ComponentDao;
 import com.orderandwarehouse.app.repository.StorageUnitDao;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StorageUnitService {
     private final StorageUnitDao storageUnitDao;
-    private final ComponentDao componentDao;
+    private final StorageUnitConverter converter;
 
     public List<StorageUnit> getAll() {
         return storageUnitDao.findAllByIdNotNullOrderByRowAscColumnAscShelfAsc();
@@ -28,22 +26,12 @@ public class StorageUnitService {
         return storageUnitDao.findById(id);
     }
 
-    public StorageUnit add(@Valid StorageUnit storageUnit) {
-        return storageUnitDao.save(storageUnit);
+    public StorageUnit add(StorageUnitDto dto) {
+        return storageUnitDao.save(converter.dtoToEntityForAdding(dto));
     }
 
-    //intended: doesn't update row/column/shelf
-    public StorageUnit update(Long id, StorageUnitDto dto) {
-        StorageUnit storageUnit = storageUnitDao.findById(id).orElseThrow(NoSuchElementException::new);
-        Component component = componentDao.findById(dto.getComponentId())
-                .orElseThrow(
-                        () -> new NoSuchElementException(
-                                String.format("Component '%d' not found!", dto.getComponentId())
-                        ));
-        storageUnit.setComponent(component);
-        storageUnit.setQuantity(dto.getQuantity());
-        storageUnit.setFull(dto.isFull());
-        return storageUnitDao.save(storageUnit);
+    public StorageUnit update(StorageUnitDto dto) {
+        return storageUnitDao.save(converter.dtoToEntityForUpdating(dto));
     }
 
     public void delete(Long id) {

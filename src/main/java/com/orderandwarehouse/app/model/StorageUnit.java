@@ -37,6 +37,11 @@ public class StorageUnit {
     @NotNull
     private LocalDateTime dateModified;
 
+    public String getComponentName() {
+        if (component != null) return component.getName();
+        else return null;
+    }
+
     public boolean isEmpty() {
         return component == null && (quantity == null || quantity == 0);
     }
