@@ -35,7 +35,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getById(@PathVariable @Min(value = 1) Long id) {
+    public ResponseEntity<Order> getById(@PathVariable @NotNull @Min(value = 1) Long id) {
         return service.getById(id)
                 .map(o -> new ResponseEntity<>(o, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -49,7 +49,7 @@ public class OrderController {
     @PutMapping("/{id}")
     public ResponseEntity<Order> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid OrderDto orderDto) {
         if(!id.equals(orderDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
-        return new ResponseEntity<>(service.update(id,orderDto), HttpStatus.OK);
+        return new ResponseEntity<>(service.update(orderDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -34,7 +34,7 @@ public class OrderService {
         return orderDao.save(converter.dtoToEntityForAdding(dto));
     }
 
-    public Order update(Long id, OrderDto dto) {
+    public Order update(OrderDto dto) {
         return orderDao.save(converter.dtoToEntityForUpdating(dto));
     }
 
