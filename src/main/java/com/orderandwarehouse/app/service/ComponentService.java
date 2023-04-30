@@ -27,12 +27,11 @@ public class ComponentService {
     }
 
     public Component add(ComponentDto dto) {
-        return componentDao.save(converter.dtoToEntity(dto));
+        return componentDao.save(converter.dtoToEntityForAdding(dto));
     }
 
-    public Component update(Long id, ComponentDto dto) {
-        dto.setId(id);
-        return componentDao.save(converter.dtoToEntity(dto));
+    public Component update(ComponentDto dto) {
+        return componentDao.save(converter.dtoToEntityForUpdating(dto));
     }
 
     public void delete(Long id) {

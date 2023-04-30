@@ -17,9 +17,11 @@ public class ComponentDto {
     private String name;
     @NotNull
     private Type type;
+    @DecimalMin(value = "0.0")
     private Double primaryValue;
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String primaryUnit;
+    @DecimalMin(value = "0.0")
     private Double secondaryValue;
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String secondaryUnit;

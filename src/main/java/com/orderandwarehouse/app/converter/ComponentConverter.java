@@ -1,7 +1,9 @@
 package com.orderandwarehouse.app.converter;
 
+import com.orderandwarehouse.app.exception.NoIdException;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.dto.ComponentDto;
+import com.orderandwarehouse.app.model.dto.OrderDto;
 import com.orderandwarehouse.app.repository.ComponentDao;
 import lombok.RequiredArgsConstructor;
 
@@ -12,14 +14,21 @@ import java.time.LocalDateTime;
 public class ComponentConverter {
     private final ComponentDao componentDao;
 
-    public Component dtoToEntity(ComponentDto dto) {
-        Component entity;
-        if (dto.getId() == null) {
-            entity = new Component();
-            entity.setDateAdded(LocalDateTime.now());
-        } else {
-            entity = componentDao.findById(dto.getId()).orElseThrow();
-        }
+    public Component dtoToEntityForAdding(ComponentDto dto) {
+        Component entity = new Component();
+        setAttributes(dto, entity);
+        entity.setDateAdded(LocalDateTime.now());
+        return entity;
+    }
+
+    public Component dtoToEntityForUpdating(ComponentDto dto) {
+        if (dto.getId() == null) throw new NoIdException(OrderDto.class); //should never be true
+        Component entity = componentDao.findById(dto.getId()).orElseThrow();
+        setAttributes(dto, entity);
+        return entity;
+    }
+
+    private void setAttributes(ComponentDto dto, Component entity) {
         entity.setName(dto.getName());
         entity.setType(dto.getType());
         entity.setPrimaryValue(dto.getPrimaryValue());
@@ -32,6 +41,5 @@ public class ComponentConverter {
         entity.setManufacturerId(dto.getManufacturerId());
         entity.setTraderComponentId(dto.getTraderComponentId());
         entity.setDateModified(LocalDateTime.now());
-        return entity;
     }
 }
