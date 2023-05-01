@@ -32,11 +32,11 @@ public class ComponentIntegrationTests {
     private String entityUrl;
     private String baseUrl;
 
-    ComponentDto invalidComponentDto1;
-    ComponentDto invalidComponentDto2;
-    ComponentDto componentDto1;
-    ComponentDto componentDto2;
-    ComponentDto componentDto3;
+    private ComponentDto invalidComponentDto1;
+    private ComponentDto invalidComponentDto2;
+    private ComponentDto componentDto1;
+    private ComponentDto componentDto2;
+    private ComponentDto componentDto3;
 
 
     @BeforeEach
