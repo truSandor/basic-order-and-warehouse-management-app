@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,8 +84,60 @@ public class ComponentIntegrationTests {
     void someComponentStored_getAll_returnsAll() {
         Set<ComponentDto> testData = Set.of(componentDto1, componentDto2, componentDto3);
         testData.forEach(data -> restTemplate.postForObject(entityUrl, data, Component.class));
-        Component[] result = restTemplate.getForObject(entityUrl, Component[].class);
         Set<String> componentDtoNames = testData.stream().map(ComponentDto::getName).collect(Collectors.toSet());
+        ResponseEntity<Component[]> response = restTemplate.getForEntity(entityUrl, Component[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Component[] result = Objects.requireNonNull(response.getBody());
         assertTrue(Arrays.stream(result).map(Component::getName).allMatch(componentDtoNames::contains));
     }
+
+    @Test
+    void oneComponentStored_getById_returnsComponent() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
+        Long id = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody()).getId();
+        ResponseEntity<Component> response = restTemplate.getForEntity(entityUrl + "/" + id, Component.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Component result = Objects.requireNonNull(response.getBody());
+        assertEquals(componentDto1.getName(), result.getName());
+    }
+
+    @Test
+    void emptyDatabase_getByInvalidId_returnsError() {
+        Long id = 0L;
+        Map<String, String> expectedBody = new HashMap<>() {{
+            put(id.toString(), "nagyobbnak, vagy egyenlőnek kell lennie, mint 1");
+        }};
+        ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
+    }
+
+    @Test
+    void emptyDatabase_getByNonExistentId_returnsNotFound() {
+        Long id = 1L;
+        ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void oneComponentStored_validUpdateRequest_returnsUpdatedComponent() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
+        Component component1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody());
+        componentDto1.setId(component1.getId());
+        componentDto1.setName("componentDto1 updated");
+        LocalDateTime dateAdded = component1.getDateAdded();
+        LocalDateTime dateModified = component1.getDateModified();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ComponentDto> httpEntity = new HttpEntity<>(componentDto1, headers);
+        ResponseEntity<Component> response = restTemplate.exchange(entityUrl + "/" + componentDto1.getId(), HttpMethod.PUT, httpEntity, Component.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Component result = Objects.requireNonNull(response.getBody());
+        assertEquals(componentDto1.getId(), result.getId());
+        assertEquals(componentDto1.getName(), result.getName());
+        assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
+        assertTrue(result.getDateModified().isAfter(dateModified.truncatedTo(ChronoUnit.MILLIS)));
+    }
+
 }
