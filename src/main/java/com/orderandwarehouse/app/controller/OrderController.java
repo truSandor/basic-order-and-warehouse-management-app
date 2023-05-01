@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import static com.orderandwarehouse.app.util.Constants.MAX_SIZE_MESSAGE;
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -30,12 +33,12 @@ public class OrderController {
     }
 
     @GetMapping(params = "nameLike")
-    public ResponseEntity<List<Order>> getByProductNameLike(@RequestParam @Size(max = 40) String nameLike) {
+    public ResponseEntity<List<Order>> getByProductNameLike(@RequestParam @Size(max = 40, message = MAX_SIZE_MESSAGE) String nameLike) {
         return new ResponseEntity<>(service.getByProductNameLike(nameLike), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getById(@PathVariable @NotNull @Min(value = 1) Long id) {
+    public ResponseEntity<Order> getById(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id) {
         return service.getById(id)
                 .map(o -> new ResponseEntity<>(o, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -47,13 +50,13 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid OrderDto orderDto) {
-        if(!id.equals(orderDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
+    public ResponseEntity<Order> update(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id, @RequestBody @Valid OrderDto orderDto) {
+        if (!id.equals(orderDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
         return new ResponseEntity<>(service.update(orderDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable @Min(value = 1) Long id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable @Min(value = 1, message = MIN_MESSAGE) Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

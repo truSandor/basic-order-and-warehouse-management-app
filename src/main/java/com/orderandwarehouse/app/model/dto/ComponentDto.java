@@ -4,13 +4,12 @@ import com.orderandwarehouse.app.model.Type;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import static com.orderandwarehouse.app.util.Constants.*;
+
 @Getter
 @Setter
 @Builder
 public class ComponentDto {
-
-    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
-    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
     @Min(value = 1, message = MIN_MESSAGE)
     private Long Id;
@@ -30,7 +29,7 @@ public class ComponentDto {
     @Min(value = 0, message = MIN_MESSAGE)
     private Integer tolerance;
     @Size(max = 8, message = MAX_SIZE_MESSAGE)
-    @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
+    @Pattern(regexp = DIMENSIONS_REGEX, message = DIMENSIONS_MESSAGE)
     private String packageDimensions;
     @DecimalMin(value = "0.0", message = MIN_MESSAGE)
     private Double weightInGrammes;

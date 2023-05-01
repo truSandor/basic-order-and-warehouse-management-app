@@ -8,11 +8,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+import static com.orderandwarehouse.app.util.Constants.DATE_PATTERN;
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+
 @Getter
 @Setter
 @Builder
 public class OrderDto {
-    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
     @Min(value = 1, message = MIN_MESSAGE)
     private Long id;
@@ -23,13 +25,13 @@ public class OrderDto {
     @Min(value = 1, message = MIN_MESSAGE)
     private Integer quantity;
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-ddThh:mm:ss.SS")
+    @DateTimeFormat(pattern = DATE_PATTERN)
     private LocalDateTime dateReceived;
-    @DateTimeFormat(pattern = "yyyy-MM-ddThh:mm:ss.SS")
+    @DateTimeFormat(pattern = DATE_PATTERN)
     private LocalDateTime deadline;
-    @DateTimeFormat(pattern = "yyyy-MM-ddThh:mm:ss.SS")
+    @DateTimeFormat(pattern = DATE_PATTERN)
     private LocalDateTime dateStarted;
-    @DateTimeFormat(pattern = "yyyy-MM-ddThh:mm:ss.SS")
+    @DateTimeFormat(pattern = DATE_PATTERN)
     private LocalDateTime dateCompleted;
     @NotNull
     private Status status;

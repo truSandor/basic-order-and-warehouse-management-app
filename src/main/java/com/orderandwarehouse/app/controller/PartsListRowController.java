@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+
 @RestController
 @RequestMapping("/products/partslist")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class PartsListRowController {
     private final PartsListRowService service;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<List<PartsListRow>> getPartsListByProductId(@PathVariable Long productId) {
+    public ResponseEntity<List<PartsListRow>> getPartsListByProductId(@PathVariable @Min(value = 1, message = MIN_MESSAGE) Long productId) {
         return new ResponseEntity<>(service.getPartsListByProductId(productId), HttpStatus.OK);
     }
 
@@ -33,23 +35,25 @@ public class PartsListRowController {
     }
 
     @PostMapping("/{productId}")
-    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable @NotNull @Min(value = 1) Long productId, @RequestBody @Valid List<PartsListRowDto> partsList) {
+    public ResponseEntity<List<PartsListRow>> addAllToProduct(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long productId,
+                                                              @RequestBody @Valid List<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.addAllToProduct(productId, partsList), HttpStatus.OK);
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable @NotNull @Min(value = 1) Long productId, @RequestBody @Valid Set<PartsListRowDto> partsList) {
+    public ResponseEntity<List<PartsListRow>> updateAllBelongingToProduct(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long productId,
+                                                                          @RequestBody @Valid Set<PartsListRowDto> partsList) {
         return new ResponseEntity<>(service.updateAllBelongingToProduct(productId, partsList), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/single/row/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable @NotNull @Min(value = 1) Long id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<HttpStatus> deleteAllByProductId(@PathVariable Long productId) {
+    public ResponseEntity<HttpStatus> deleteAllByProductId(@PathVariable @Min(value = 1, message = MIN_MESSAGE) Long productId) {
         service.deleteAllByProductId(productId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

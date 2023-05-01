@@ -6,12 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import static com.orderandwarehouse.app.util.Constants.MAX_SIZE_MESSAGE;
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+
 @Getter
 @Setter
 @Builder
 public class PartsListRowDto {
-    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
-    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
     @Min(value = 1, message = MIN_MESSAGE)
     private Long id;

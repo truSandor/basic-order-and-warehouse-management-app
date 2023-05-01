@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+
 @RestController
 @RequestMapping("/storage")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class StorageUnitController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StorageUnit> getById(@PathVariable @NotNull @Min(value = 1) Long id) {
+    public ResponseEntity<StorageUnit> getById(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id) {
         return service.getById(id)
                 .map(su -> new ResponseEntity<>(su, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -41,19 +43,24 @@ public class StorageUnitController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StorageUnit> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid StorageUnitDto storageUnitDto) {
-        if(!id.equals(storageUnitDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
+    public ResponseEntity<StorageUnit> update(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id,
+                                              @RequestBody @Valid StorageUnitDto storageUnitDto) {
+        if (!id.equals(storageUnitDto.getId()))
+            throw new InputMismatchException("Id in path doesn't match with Id in Body!");
         return new ResponseEntity<>(service.update(storageUnitDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable @NotNull @Min(value = 1) Long id) {
-            service.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<HttpStatus> delete(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id) {
+        service.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/component/{component_id}")
-    public ResponseEntity<List<StorageUnit>> getAllByComponentId(@PathVariable(name = "component_id") @NotNull @Min(value = 1) Long componentId) {
+    public ResponseEntity<List<StorageUnit>> getAllByComponentId(@PathVariable(name = "component_id")
+                                                                 @NotNull
+                                                                 @Min(value = 1, message = MIN_MESSAGE)
+                                                                 Long componentId) {
         return new ResponseEntity<>(service.getAllByComponentId(componentId), HttpStatus.OK);
     }
 }

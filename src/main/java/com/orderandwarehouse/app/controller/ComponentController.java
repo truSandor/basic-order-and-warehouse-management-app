@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import static com.orderandwarehouse.app.util.Constants.MIN_MESSAGE;
+import static com.orderandwarehouse.app.util.Constants.MAX_SIZE_MESSAGE;
+
 @RestController
 @RequestMapping("/components")
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class ComponentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Component> getById(@PathVariable @Min(value = 1) Long id) {
+    public ResponseEntity<Component> getById(@PathVariable @Min(value = 1, message = MIN_MESSAGE) Long id) {
         return service.getById(id)
                 .map(c -> new ResponseEntity<>(c, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -42,19 +45,21 @@ public class ComponentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Component> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid ComponentDto componentDto) {
-        if(!id.equals(componentDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
+    public ResponseEntity<Component> update(@PathVariable @NotNull @Min(value = 1, message = MIN_MESSAGE) Long id,
+                                            @RequestBody @Valid ComponentDto componentDto) {
+        if (!id.equals(componentDto.getId()))
+            throw new InputMismatchException("Id in path doesn't match with Id in Body!");
         return new ResponseEntity<>(service.update(componentDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable @Min(value = 1) Long id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable @Min(value = 1, message = MIN_MESSAGE) Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(params = "nameLike")
-    public ResponseEntity<List<Component>> getByNameLike(@RequestParam @Size(max = 40) String nameLike) {
+    public ResponseEntity<List<Component>> getByNameLike(@RequestParam @Size(max = 40, message = MAX_SIZE_MESSAGE) String nameLike) {
         return new ResponseEntity<>(service.getByNameLike(nameLike), HttpStatus.OK);
     }
 }
