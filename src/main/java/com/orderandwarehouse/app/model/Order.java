@@ -1,9 +1,6 @@
 package com.orderandwarehouse.app.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -35,10 +32,12 @@ public class Order {
         return status.equals(Status.IN_PROGRESS);
     }
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public boolean isOverDue() {
         return (!status.equals(Status.COMPLETED) && dateCompleted == null && deadline != null && deadline.isBefore(LocalDateTime.now()));
     }
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public boolean completedOverDue() {
         return (status.equals(Status.COMPLETED) && dateCompleted != null && deadline != null && deadline.isBefore(dateCompleted));
     }

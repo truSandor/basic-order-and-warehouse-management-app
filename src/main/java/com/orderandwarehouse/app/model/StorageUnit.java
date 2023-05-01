@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -31,11 +32,13 @@ public class StorageUnit {
     private LocalDateTime dateAdded;
     private LocalDateTime dateModified;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getComponentName() {
         if (component != null) return component.getName();
         else return null;
     }
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public boolean isEmpty() {
         return component == null && (quantity == null || quantity == 0);
     }

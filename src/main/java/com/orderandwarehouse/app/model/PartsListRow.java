@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class PartsListRow {
     private LocalDateTime dateAdded;
     private LocalDateTime dateModified;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getComponentName(){
         return component.getName();
     }
