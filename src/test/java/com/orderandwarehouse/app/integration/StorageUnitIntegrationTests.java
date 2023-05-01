@@ -130,4 +130,16 @@ public class StorageUnitIntegrationTests {
         assertEquals(storageUnitDtoShelves, Arrays.stream(result).map(StorageUnit::getShelf).toList());
         assertEquals(List.of(1L, 2L, 3L), Arrays.stream(result).map(StorageUnit::getId).toList());
     }
+
+    @Test
+    void oneStorageUnitStored_getById_returnsStorageUnit() {
+        HttpEntity<StorageUnitDto> request = new HttpEntity<>(storageUnitDto1);
+        Long id = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, StorageUnit.class).getBody()).getId();
+        ResponseEntity<StorageUnit> response = restTemplate.getForEntity(entityUrl + "/" + id, StorageUnit.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        StorageUnit result = Objects.requireNonNull(response.getBody());
+        assertEquals(storageUnitDto1.getRow(), result.getRow());
+        assertEquals(storageUnitDto1.getColumn(), result.getColumn());
+        assertEquals(storageUnitDto1.getShelf(), result.getShelf());
+    }
 }
