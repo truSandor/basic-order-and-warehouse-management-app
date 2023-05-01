@@ -34,6 +34,7 @@ public class ComponentIntegrationTests {
 
     private ComponentDto invalidComponentDto1;
     private ComponentDto invalidComponentDto2;
+    private ComponentDto invalidComponentDto3;
     private ComponentDto componentDto1;
     private ComponentDto componentDto2;
     private ComponentDto componentDto3;
@@ -45,6 +46,7 @@ public class ComponentIntegrationTests {
         entityUrl = baseUrl + "/components";
         invalidComponentDto1 = ComponentDto.builder().name("").type(Type.SMD).build();
         invalidComponentDto2 = ComponentDto.builder().name("1".repeat(121)).type(Type.SMD).build();
+        invalidComponentDto3 = ComponentDto.builder().name("invalidComponent3").type(Type.SMD).packageDimensions("xxx11x11").build();
         componentDto1 = ComponentDto.builder().name("component1").type(Type.SMD).build();
         componentDto2 = ComponentDto.builder().name("component2").type(Type.SMD).build();
         componentDto3 = ComponentDto.builder().name("component3").type(Type.THD).build();
@@ -87,6 +89,17 @@ public class ComponentIntegrationTests {
         ResponseEntity<Object> result = restTemplate.postForEntity(entityUrl, request, Object.class);
         Map<String, String> expectedBody = new HashMap<>() {{
             put("name", "Max 120 characters!");
+        }};
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertEquals(expectedBody, result.getBody());
+    }
+
+    @Test
+    void emptyDatabase_addInvalidComponent03_returnsBAD_REQUEST() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(invalidComponentDto3);
+        ResponseEntity<Object> result = restTemplate.postForEntity(entityUrl, request, Object.class);
+        Map<String, String> expectedBody = new HashMap<>() {{
+            put("packageDimensions", "Dimensions pattern: \"LLxWWxHH\" in cm");
         }};
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertEquals(expectedBody, result.getBody());

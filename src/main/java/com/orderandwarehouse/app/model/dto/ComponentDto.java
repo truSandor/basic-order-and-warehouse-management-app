@@ -29,7 +29,7 @@ public class ComponentDto {
     private String secondaryUnit;
     @Min(value = 0, message = MIN_MESSAGE)
     private Integer tolerance;
-    @Size(max = 8)
+    @Size(max = 8, message = MAX_SIZE_MESSAGE)
     @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String packageDimensions;
     @DecimalMin(value = "0.0", message = MIN_MESSAGE)
