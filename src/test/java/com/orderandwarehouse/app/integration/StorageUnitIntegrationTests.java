@@ -1,6 +1,7 @@
 package com.orderandwarehouse.app.integration;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.Type;
@@ -12,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RequestCallback;
 
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -141,5 +142,70 @@ public class StorageUnitIntegrationTests {
         assertEquals(storageUnitDto1.getRow(), result.getRow());
         assertEquals(storageUnitDto1.getColumn(), result.getColumn());
         assertEquals(storageUnitDto1.getShelf(), result.getShelf());
+    }
+
+    @Test
+    void emptyDatabase_getByInvalidId_returnsBAD_REQUEST() {
+        Long id = 0L;
+        Map<String, String> expectedBody = new HashMap<>() {{
+            put(id.toString(), "Needs to be greater or equal to 1!");
+        }};
+        ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
+    }
+
+
+    @Test
+    void emptyDatabase_getByNonExistentId_returnsNOT_FOUND() {
+        Long id = 1L;
+        ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void oneEmptyStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
+        HttpEntity<StorageUnitDto> request = new HttpEntity<>(storageUnitDto1);
+        StorageUnit storageUnit1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, StorageUnit.class).getBody());
+        storageUnitDto1.setId(storageUnit1.getId());
+        storageUnitDto1.setComponentId(component1.getId());
+        storageUnitDto1.setQuantity(100.0);
+        LocalDateTime dateAdded = storageUnit1.getDateAdded();
+        LocalDateTime dateModified = storageUnit1.getDateModified();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<StorageUnitDto> httpEntity = new HttpEntity<>(storageUnitDto1, headers);
+//        ResponseEntity<StorageUnit> response = restTemplate.exchange(entityUrl + "/" + storageUnitDto1.getId(), HttpMethod.PUT, httpEntity, StorageUnit.class);
+        ResponseEntity<StorageUnit> response = restTemplate.execute(entityUrl + "/" + storageUnitDto1.getId(),
+                HttpMethod.PUT,
+                requestCallback(storageUnitDto1),
+                r -> {
+                    ObjectMapper mapper = new ObjectMapper();
+                    StorageUnit storageUnit = new StorageUnit();
+                    StringWriter writer = new StringWriter(r.getBody().read());
+                    writer.close();
+                    mapper.writeValue(writer, storageUnit);
+                    return new ResponseEntity<>(storageUnit, r.getStatusCode());
+                });
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        StorageUnit result = Objects.requireNonNull(response.getBody());
+
+        result = restTemplate.getForObject(entityUrl + "/" + storageUnitDto1.getId(), StorageUnit.class);
+        assertEquals(storageUnitDto1.getId(), result.getId());
+        assertEquals(storageUnitDto1.getComponentId(), result.getComponent().getId());
+        assertEquals(storageUnitDto1.getQuantity(), result.getQuantity());
+        assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
+        assertTrue(result.getDateModified().isAfter(dateModified.truncatedTo(ChronoUnit.MILLIS)));
+    }
+
+    private RequestCallback requestCallback(final StorageUnitDto updatedInstance) {
+        return clientHttpRequest -> {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(clientHttpRequest.getBody(), updatedInstance);
+            clientHttpRequest.getHeaders().add(
+                    HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+//            clientHttpRequest.getHeaders().add(
+//                    HttpHeaders.AUTHORIZATION, "Basic " + getBase64EncodedLogPass());
+        };
     }
 }
