@@ -12,14 +12,15 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class OrderDto {
+    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long id;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long productId;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Integer quantity;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-ddThh:mm:ss.SS")

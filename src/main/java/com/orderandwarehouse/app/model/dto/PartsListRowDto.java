@@ -11,17 +11,18 @@ import lombok.*;
 @Builder
 public class PartsListRowDto {
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long id;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long productId;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long componentId;
     @NotNull
-    @DecimalMin("0.0")
+    @DecimalMin(value = "0.0", message = MIN_MESSAGE)
     private Double quantity;
     @Size(max = 4, message = MAX_SIZE_MESSAGE)
     @Builder.Default

@@ -9,20 +9,22 @@ import lombok.*;
 @Setter
 @Builder
 public class StorageUnitDto {
-    @Min(value = 1)
+    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
+
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long id;
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long componentId;
-    @DecimalMin(value = "0.0")
+    @DecimalMin(value = "0.0", message = MIN_MESSAGE)
     private Double quantity;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Integer row;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Integer column;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Integer shelf;
     private boolean full;
 }

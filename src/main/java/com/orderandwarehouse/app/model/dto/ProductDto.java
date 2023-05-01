@@ -11,17 +11,18 @@ import lombok.*;
 @Builder
 public class ProductDto {
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
+    private static final String MIN_MESSAGE = "Needs to be greater or equal to {value}!";
 
-    @Min(value = 1)
+    @Min(value = 1, message = MIN_MESSAGE)
     private Long id;
     @Size(max = 120, message = MAX_SIZE_MESSAGE)
     @NotBlank(message = "Name must not be blank!")
     private String name;
     @Size(max = 10, message = MAX_SIZE_MESSAGE)
     private String version;
-    @Size(max = 8)
+    @Size(max = 8, message = MAX_SIZE_MESSAGE)
     @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String dimensions;
-    @Min(value = 0)
+    @Min(value = 0, message = MIN_MESSAGE)
     private Integer weightInGrammes;
 }
