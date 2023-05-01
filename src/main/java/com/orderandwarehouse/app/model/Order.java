@@ -36,6 +36,10 @@ public class Order {
     }
 
     public boolean isOverDue() {
-        return (!status.equals(Status.COMPLETED) && dateCompleted == null && deadline.isBefore(LocalDateTime.now()));
+        return (!status.equals(Status.COMPLETED) && dateCompleted == null && deadline != null && deadline.isBefore(LocalDateTime.now()));
+    }
+
+    public boolean completedOverDue() {
+        return (status.equals(Status.COMPLETED) && dateCompleted != null && deadline != null && deadline.isBefore(dateCompleted));
     }
 }
