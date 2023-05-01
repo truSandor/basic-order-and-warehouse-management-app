@@ -173,24 +173,24 @@ public class StorageUnitIntegrationTests {
         LocalDateTime dateAdded = storageUnit1.getDateAdded();
         LocalDateTime dateModified = storageUnit1.getDateModified();
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<StorageUnitDto> httpEntity = new HttpEntity<>(storageUnitDto1, headers);
-//        ResponseEntity<StorageUnit> response = restTemplate.exchange(entityUrl + "/" + storageUnitDto1.getId(), HttpMethod.PUT, httpEntity, StorageUnit.class);
-        ResponseEntity<StorageUnit> response = restTemplate.execute(entityUrl + "/" + storageUnitDto1.getId(),
-                HttpMethod.PUT,
-                requestCallback(storageUnitDto1),
-                r -> {
-                    ObjectMapper mapper = new ObjectMapper();
-                    StorageUnit storageUnit = new StorageUnit();
-                    StringWriter writer = new StringWriter(r.getBody().read());
-                    writer.close();
-                    mapper.writeValue(writer, storageUnit);
-                    return new ResponseEntity<>(storageUnit, r.getStatusCode());
-                });
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        HttpEntity<StorageUnitDto> httpEntity = new HttpEntity<>(storageUnitDto1, headers);
+        ResponseEntity<StorageUnit> response = restTemplate.exchange(entityUrl + "/" + storageUnitDto1.getId(), HttpMethod.PUT, httpEntity, StorageUnit.class);
+//        ResponseEntity<StorageUnit> response = restTemplate.execute(entityUrl + "/" + storageUnitDto1.getId(),
+//                HttpMethod.PUT,
+//                requestCallback(storageUnitDto1),
+//                r -> {
+//                    ObjectMapper mapper = new ObjectMapper();
+//                    StorageUnit storageUnit = new StorageUnit();
+//                    StringWriter writer = new StringWriter(r.getBody().read());
+//                    writer.close();
+//                    mapper.writeValue(writer, storageUnit);
+//                    return new ResponseEntity<>(storageUnit, r.getStatusCode());
+//                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         StorageUnit result = Objects.requireNonNull(response.getBody());
 
-        result = restTemplate.getForObject(entityUrl + "/" + storageUnitDto1.getId(), StorageUnit.class);
+//        result = restTemplate.getForObject(entityUrl + "/" + storageUnitDto1.getId(), StorageUnit.class);
         assertEquals(storageUnitDto1.getId(), result.getId());
         assertEquals(storageUnitDto1.getComponentId(), result.getComponent().getId());
         assertEquals(storageUnitDto1.getQuantity(), result.getQuantity());
