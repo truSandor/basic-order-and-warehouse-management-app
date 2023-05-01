@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,24 +19,17 @@ public class PartsListRow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     @ManyToOne
     @JsonIdentityReference(alwaysAsId = true)
     private Product product;
-    @NotNull
     @ManyToOne
     @JsonIdentityReference(alwaysAsId = true)
     private Component component;
-    @NotNull
     private Double quantity;
-    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String unit = "pcs";
     @Column(name = "[comment]")
-    @Size(max = 5000, message = MAX_SIZE_MESSAGE)
     private String Comment;
-    @NotNull
     private LocalDateTime dateAdded;
-    @NotNull
     private LocalDateTime dateModified;
 
     public String getComponentName(){

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,37 +16,23 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Component {
 
-    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "[name]")
-    @Size(max = 120, message = MAX_SIZE_MESSAGE)
-    @NotBlank(message = "Name must not be blank!")
     private String name;
-    @NotNull
     @Column(name = "[type]")
     private Type type;
     private Double primaryValue;
-    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String primaryUnit;
     private Double secondaryValue;
-    @Size(max = 4, message = MAX_SIZE_MESSAGE)
     private String secondaryUnit;
     private Integer tolerance;
-    @Size(max = 8)
-    @Pattern(regexp = "^\\d{1,2}x\\d{1,2}x\\d{1,2}$", message = "Dimensions pattern: \"LLxWWxHH\" in cm")
     private String packageDimensions;
-    @DecimalMin(value = "0.0")
     private Double weightInGrammes;
-    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String manufacturerId;
-    @Size(max = 40, message = MAX_SIZE_MESSAGE)
     private String traderComponentId;
-    @NotNull
     private LocalDateTime dateAdded;
-    @NotNull
     private LocalDateTime dateModified;
     @OneToMany(mappedBy = "component")
     @JsonIdentityReference(alwaysAsId = true)

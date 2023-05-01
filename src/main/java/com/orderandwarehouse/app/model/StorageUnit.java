@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,20 +20,15 @@ public class StorageUnit {
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Component component;
-    @NotNull
     @Column(name = "[row]")
     private Integer row;
-    @NotNull
     @Column(name = "[column]")
     private Integer column;
-    @NotNull
     private Integer shelf;
     private Double quantity;
     @Column(name = "[full]")
     private boolean full;
-    @NotNull
     private LocalDateTime dateAdded;
-    @NotNull
     private LocalDateTime dateModified;
 
     public String getComponentName() {

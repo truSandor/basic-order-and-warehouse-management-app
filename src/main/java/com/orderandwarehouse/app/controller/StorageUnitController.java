@@ -39,8 +39,6 @@ public class StorageUnitController {
         return new ResponseEntity<>(service.add(storageUnitDto), HttpStatus.OK);
     }
 
-    //we can use it to change component, quantity, full
-    //intended: doesn't update row/column/shelf
     @PutMapping("/{id}")
     public ResponseEntity<StorageUnit> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody StorageUnitDto storageUnitDto) {
         if(!id.equals(storageUnitDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
