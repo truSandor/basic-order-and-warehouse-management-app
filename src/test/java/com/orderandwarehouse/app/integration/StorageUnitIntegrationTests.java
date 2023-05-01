@@ -114,4 +114,20 @@ public class StorageUnitIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertEquals(expectedBody, result.getBody());
     }
+
+    @Test
+    void someStorageUnitsStored_getAll_returnsAll() {
+        List<StorageUnitDto> testData = List.of(storageUnitDto1, storageUnitDto2, storageUnitDto3);
+        testData.forEach(data -> restTemplate.postForObject(entityUrl, data, Component.class));
+        List<Integer> storageUnitDtoRows = testData.stream().map(StorageUnitDto::getRow).toList();
+        List<Integer> storageUnitDtoColumns = testData.stream().map(StorageUnitDto::getColumn).toList();
+        List<Integer> storageUnitDtoShelves = testData.stream().map(StorageUnitDto::getShelf).toList();
+        ResponseEntity<StorageUnit[]> response = restTemplate.getForEntity(entityUrl, StorageUnit[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        StorageUnit[] result = Objects.requireNonNull(response.getBody());
+        assertEquals(storageUnitDtoRows, Arrays.stream(result).map(StorageUnit::getRow).toList());
+        assertEquals(storageUnitDtoColumns, Arrays.stream(result).map(StorageUnit::getColumn).toList());
+        assertEquals(storageUnitDtoShelves, Arrays.stream(result).map(StorageUnit::getShelf).toList());
+        assertEquals(List.of(1L, 2L, 3L), Arrays.stream(result).map(StorageUnit::getId).toList());
+    }
 }
