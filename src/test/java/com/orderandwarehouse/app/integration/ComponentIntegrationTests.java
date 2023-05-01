@@ -1,7 +1,9 @@
 package com.orderandwarehouse.app.integration;
 
 import com.orderandwarehouse.app.model.Component;
+import com.orderandwarehouse.app.model.Type;
 import com.orderandwarehouse.app.model.dto.ComponentDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.orderandwarehouse.app.data.TestComponentDto.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,11 +33,26 @@ public class ComponentIntegrationTests {
     private String entityUrl;
     private String baseUrl;
 
+    ComponentDto invalidComponentDto1;
+    ComponentDto invalidComponentDto2;
+    ComponentDto componentDto1;
+    ComponentDto componentDto2;
+    ComponentDto componentDto3;
+
 
     @BeforeEach
     void setUp() {
         baseUrl = "http://localhost:" + port;
         entityUrl = baseUrl + "/components";
+        invalidComponentDto1 = ComponentDto.builder().name("").type(Type.SMD).build();
+        invalidComponentDto2 = ComponentDto.builder().name("1".repeat(121)).type(Type.SMD).build();
+        componentDto1 = ComponentDto.builder().name("component1").type(Type.SMD).build();
+        componentDto2 = ComponentDto.builder().name("component2").type(Type.SMD).build();
+        componentDto3 = ComponentDto.builder().name("component3").type(Type.THD).build();
+    }
+
+    @AfterEach
+    void reset(){
     }
 
     @Test
@@ -59,7 +75,7 @@ public class ComponentIntegrationTests {
     }
 
     @Test
-    void emptyDatabase_addInvalidComponent01_returnsError() {
+    void emptyDatabase_addInvalidComponent01_returnsBAD_REQUEST() {
         HttpEntity<ComponentDto> request = new HttpEntity<>(invalidComponentDto1);
         ResponseEntity<Object> result = restTemplate.postForEntity(entityUrl, request, Object.class);
         Map<String, String> expectedBody = new HashMap<>() {{
@@ -70,7 +86,7 @@ public class ComponentIntegrationTests {
     }
 
     @Test
-    void emptyDatabase_addInvalidComponent02_returnsError() {
+    void emptyDatabase_addInvalidComponent02_returnsBAD_REQUEST() {
         HttpEntity<ComponentDto> request = new HttpEntity<>(invalidComponentDto2);
         ResponseEntity<Object> result = restTemplate.postForEntity(entityUrl, request, Object.class);
         Map<String, String> expectedBody = new HashMap<>() {{
@@ -102,7 +118,7 @@ public class ComponentIntegrationTests {
     }
 
     @Test
-    void emptyDatabase_getByInvalidId_returnsError() {
+    void emptyDatabase_getByInvalidId_returnsBAD_REQUEST() {
         Long id = 0L;
         Map<String, String> expectedBody = new HashMap<>() {{
             put(id.toString(), "nagyobbnak, vagy egyenlőnek kell lennie, mint 1");
@@ -113,7 +129,7 @@ public class ComponentIntegrationTests {
     }
 
     @Test
-    void emptyDatabase_getByNonExistentId_returnsNotFound() {
+    void emptyDatabase_getByNonExistentId_returnsNOT_FOUND() {
         Long id = 1L;
         ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -138,6 +154,49 @@ public class ComponentIntegrationTests {
         assertEquals(componentDto1.getName(), result.getName());
         assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
         assertTrue(result.getDateModified().isAfter(dateModified.truncatedTo(ChronoUnit.MILLIS)));
+    }
+
+    @Test
+    void oneComponentStored_wrongIdInUrlUpdateRequest_returnsBAD_REQUESTr() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
+        Component component1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody());
+        componentDto1.setId(component1.getId());
+        componentDto1.setName("componentDto1 updated");
+        Long wrongId = 2L;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ComponentDto> httpEntity = new HttpEntity<>(componentDto1, headers);
+        ResponseEntity<String> response = restTemplate.exchange(entityUrl + "/" + wrongId, HttpMethod.PUT, httpEntity, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Id in path doesn't match with Id in Body!", response.getBody());
+    }
+
+    @Test
+    void oneComponentStored_noIdInDtoUpdateRequest_returnsBAD_REQUEST() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
+        Component component1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody());
+        componentDto1.setName("componentDto1 updated");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ComponentDto> httpEntity = new HttpEntity<>(componentDto1, headers);
+        ResponseEntity<String> response = restTemplate.exchange(entityUrl + "/" + component1.getId(), HttpMethod.PUT, httpEntity, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Id in path doesn't match with Id in Body!", response.getBody());
+    }
+
+    @Test
+    void oneComponentStored_wrongIdInDtoUpdateRequest_returnsError() {
+        HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
+        Component component1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody());
+        Long wrongId = 2L;
+        componentDto1.setId(wrongId);
+        componentDto1.setName("componentDto1 updated");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ComponentDto> httpEntity = new HttpEntity<>(componentDto1, headers);
+        ResponseEntity<String> response = restTemplate.exchange(entityUrl + "/" + component1.getId(), HttpMethod.PUT, httpEntity, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Id in path doesn't match with Id in Body!", response.getBody());
     }
 
 }
