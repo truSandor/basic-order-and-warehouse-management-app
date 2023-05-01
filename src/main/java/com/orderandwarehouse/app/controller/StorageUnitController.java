@@ -3,6 +3,7 @@ package com.orderandwarehouse.app.controller;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.dto.StorageUnitDto;
 import com.orderandwarehouse.app.service.StorageUnitService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +36,12 @@ public class StorageUnitController {
     }
 
     @PostMapping
-    public ResponseEntity<StorageUnit> add(@RequestBody StorageUnitDto storageUnitDto) {
+    public ResponseEntity<StorageUnit> add(@RequestBody @Valid StorageUnitDto storageUnitDto) {
         return new ResponseEntity<>(service.add(storageUnitDto), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StorageUnit> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody StorageUnitDto storageUnitDto) {
+    public ResponseEntity<StorageUnit> update(@PathVariable @NotNull @Min(value = 1) Long id, @RequestBody @Valid StorageUnitDto storageUnitDto) {
         if(!id.equals(storageUnitDto.getId())) throw new InputMismatchException("Id in path doesn't match with Id in Body!");
         return new ResponseEntity<>(service.update(storageUnitDto), HttpStatus.OK);
     }
