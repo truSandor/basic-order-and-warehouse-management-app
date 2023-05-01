@@ -3,7 +3,6 @@ package com.orderandwarehouse.app.integration;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.Type;
 import com.orderandwarehouse.app.model.dto.ComponentDto;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +50,6 @@ public class ComponentIntegrationTests {
         componentDto3 = ComponentDto.builder().name("component3").type(Type.THD).build();
     }
 
-    @AfterEach
-    void reset(){
-    }
 
     @Test
     void emptyDatabase_getAll_returnEmptyList() {
@@ -199,4 +195,63 @@ public class ComponentIntegrationTests {
         assertEquals("Id in path doesn't match with Id in Body!", response.getBody());
     }
 
+    @Test
+    void someComponentsStored_deleteByValidId_getAllReturnsRemaining() {
+        List<ComponentDto> testData = new ArrayList<>(List.of(componentDto1, componentDto2, componentDto3));
+        List<Component> components = testData.stream().map(dto -> restTemplate.postForObject(entityUrl, dto, Component.class)).toList();
+        int expected = testData.size();
+        assertEquals(expected, components.size());
+
+        testData.remove(componentDto1);
+        Set<String> componentDtoNames = testData.stream().map(ComponentDto::getName).collect(Collectors.toSet());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<HttpStatus> deleteResponse = restTemplate.exchange(entityUrl + "/" + components.get(0).getId(), HttpMethod.DELETE, httpEntity, HttpStatus.class);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        ResponseEntity<Component[]> getAllResponse = restTemplate.getForEntity(entityUrl, Component[].class);
+        Component[] result = Objects.requireNonNull(getAllResponse.getBody());
+        assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
+        assertEquals(expected - 1, result.length);
+        assertTrue(Arrays.stream(result).map(Component::getName).allMatch(componentDtoNames::contains));
+    }
+
+    @Test
+    void oneComponentStored_deleteByValidId_getAllReturnsEmptyList() {
+        Component component = restTemplate.postForObject(entityUrl, componentDto1, Component.class);
+        assertNotNull(component);
+        assertEquals(1, component.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<HttpStatus> deleteResponse = restTemplate.exchange(entityUrl + "/" + component.getId(), HttpMethod.DELETE, httpEntity, HttpStatus.class);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        ResponseEntity<Component[]> getAllResponse = restTemplate.getForEntity(entityUrl, Component[].class);
+        Component[] result = Objects.requireNonNull(getAllResponse.getBody());
+        assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
+        assertEquals(0, result.length);
+    }
+
+    @Test
+    void oneComponentStored_deleteByNonExistingId_getAllReturnsNOT_FOUND() {
+        Component component = restTemplate.postForObject(entityUrl, componentDto1, Component.class);
+        assertNotNull(component);
+        assertEquals(1, component.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> deleteResponse = restTemplate.exchange(entityUrl + "/" + component.getId() + 1, HttpMethod.DELETE, httpEntity, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, deleteResponse.getStatusCode());
+        assertEquals("No value present", deleteResponse.getBody());
+
+        ResponseEntity<Component[]> getAllResponse = restTemplate.getForEntity(entityUrl, Component[].class);
+        Component[] result = Objects.requireNonNull(getAllResponse.getBody());
+        assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
+        assertEquals(1, result.length);
+        assertEquals(component.getId(), getAllResponse.getBody()[0].getId());
+    }
 }
