@@ -7,6 +7,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 public class StorageUnitDto {
     @Min(value = 1)
     private Long id;

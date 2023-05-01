@@ -8,6 +8,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 public class ProductDto {
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
 

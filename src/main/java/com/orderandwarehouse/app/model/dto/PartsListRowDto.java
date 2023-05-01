@@ -9,6 +9,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 public class PartsListRowDto {
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
 

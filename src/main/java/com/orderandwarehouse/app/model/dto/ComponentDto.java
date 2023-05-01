@@ -6,6 +6,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 public class ComponentDto {
 
     private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
