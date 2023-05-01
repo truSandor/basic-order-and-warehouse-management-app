@@ -130,7 +130,7 @@ public class ComponentIntegrationTests {
     void emptyDatabase_getByInvalidId_returnsBAD_REQUEST() {
         Long id = 0L;
         Map<String, String> expectedBody = new HashMap<>() {{
-            put(id.toString(), "nagyobbnak, vagy egyenlőnek kell lennie, mint 1");
+            put(id.toString(), "Needs to be greater or equal to 1!");
         }};
         ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
