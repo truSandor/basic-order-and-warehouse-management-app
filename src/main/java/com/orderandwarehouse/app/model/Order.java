@@ -32,6 +32,10 @@ public class Order {
 
     @JsonIgnore
     public boolean isActive() {
-        return status.equals(Status.IN_PROGRESS) || status.equals(Status.OVERDUE);
+        return status.equals(Status.IN_PROGRESS);
+    }
+
+    public boolean isOverDue() {
+        return (!status.equals(Status.COMPLETED) && dateCompleted == null && deadline.isBefore(LocalDateTime.now()));
     }
 }
