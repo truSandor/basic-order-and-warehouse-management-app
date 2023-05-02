@@ -2,14 +2,21 @@ services:
   db:
     image: postgres:alpine3.17
     environment:
-      -POSTGRES_DB=oaw_db
-      -POSTGRES_USER=person
-      -POSTGRES_PASSWORD=person
+      - POSTGRES_DB=oaw_db
+      - POSTGRES_USER=person
+      - POSTGRES_PASSWORD=person
     ports:
-      -5433:5432
+      - "5433:5432"
     restart: on-failure
+    container_name: cont_psql_oaw_db
   backend:
-    image: img_oaw_app
+    build:
+      context: .
+    depends_on:
+      - db
     environment:
-      - DB_URL=cont_psql_oaw_db
+      - DB_HOST=db
       - DB_PORT=5432
+    ports:
+      - "80:8080"
+    container_name: cont_oaw_backend

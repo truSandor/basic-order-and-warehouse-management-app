@@ -1,10 +1,10 @@
-FROM maven:3.9.1-amazoncorretto-17@sha256:979789b8956c72553a1ffe30309cc79a9ab329a23db93103b7d2e63eeac8c0a6 AS builder
+FROM  maven:3-eclipse-temurin-17-alpine@sha256:24abed2b13a6ed90ab1bbb5ca239bb56a994381c2357d465fe8f45185a90bc69 AS builder
 WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 COPY src /app/src
 RUN mvn package -DskipTests
-FROM amazoncorretto:8u372-alpine3.17-jre@sha256:d12dd9ad3ac77b69f4e26e34fde77696ca78e5c77c1fdd2bc08065b773287637
+FROM eclipse-temurin:17-alpine@sha256:1ecf4fe36cb342580299254487b5d899a19c5238bbac06070ebc107f513eb473
 WORKDIR /app
 RUN addgroup --system javauser
 RUN adduser -S -s /bin/false -G javauser javauser
