@@ -1,8 +1,15 @@
 package com.orderandwarehouse.app.integration;
 
+import com.orderandwarehouse.app.controller.ComponentController;
+import com.orderandwarehouse.app.controller.PartsListRowController;
+import com.orderandwarehouse.app.exception.ComponentStillInUseException;
 import com.orderandwarehouse.app.model.Component;
+import com.orderandwarehouse.app.model.PartsListRow;
+import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.Type;
 import com.orderandwarehouse.app.model.dto.ComponentDto;
+import com.orderandwarehouse.app.model.dto.PartsListRowDto;
+import com.orderandwarehouse.app.model.dto.ProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +33,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ComponentIntegrationTests {
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private ComponentController componentController;
+    @Autowired
+    private PartsListRowController partsListRowController;
 
     @LocalServerPort
     private int port;
@@ -39,6 +50,7 @@ public class ComponentIntegrationTests {
     private ComponentDto componentDto2;
     private ComponentDto componentDto3;
 
+    private Product product;
 
     @BeforeEach
     void setUp() {
@@ -50,6 +62,9 @@ public class ComponentIntegrationTests {
         componentDto1 = ComponentDto.builder().name("component1").type(Type.SMD).build();
         componentDto2 = ComponentDto.builder().name("component2").type(Type.SMD).build();
         componentDto3 = ComponentDto.builder().name("component3").type(Type.THD).build();
+
+        ProductDto productDto = ProductDto.builder().name("product1").build();
+        product = restTemplate.postForObject(baseUrl + "/products", productDto, Product.class);
     }
 
 
@@ -266,5 +281,18 @@ public class ComponentIntegrationTests {
         assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
         assertEquals(1, result.length);
         assertEquals(component.getId(), getAllResponse.getBody()[0].getId());
+    }
+
+    @Test
+    void oneComponentWithPartsListRow_deleteById_throwsComponentStillInUseException() {
+        Component component = restTemplate.postForObject(entityUrl, componentDto1, Component.class);
+        PartsListRowDto partsListRowDto = PartsListRowDto.builder().productId(product.getId()).componentId(component.getId()).quantity(1.0).build();
+        PartsListRow partsListRow = Objects.requireNonNull(partsListRowController.add(partsListRowDto).getBody());
+        assertEquals(partsListRowDto.getProductId(), partsListRow.getProduct().getId());
+        assertEquals(component.getId(), partsListRow.getComponent().getId());
+        partsListRowController.getPartsListByProductId(product.getId());
+        //todo probably mocking is needed here
+        assertThrows(ComponentStillInUseException.class, () -> componentController.delete(component.getId()));
+        assertEquals(1, Objects.requireNonNull(componentController.getAll().getBody()).size());
     }
 }
