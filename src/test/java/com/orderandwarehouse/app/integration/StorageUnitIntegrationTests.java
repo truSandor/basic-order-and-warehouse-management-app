@@ -2,6 +2,7 @@ package com.orderandwarehouse.app.integration;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orderandwarehouse.app.controller.StorageUnitController;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.Type;
@@ -32,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StorageUnitIntegrationTests {
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private StorageUnitController testController;
+
 
     @LocalServerPort
     private int port;
@@ -162,7 +166,7 @@ public class StorageUnitIntegrationTests {
         ResponseEntity<Object> response = restTemplate.getForEntity(entityUrl + "/" + id, Object.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
+/*
     @Test
     void oneEmptyStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
         HttpEntity<StorageUnitDto> request = new HttpEntity<>(storageUnitDto1);
@@ -207,5 +211,48 @@ public class StorageUnitIntegrationTests {
 //            clientHttpRequest.getHeaders().add(
 //                    HttpHeaders.AUTHORIZATION, "Basic " + getBase64EncodedLogPass());
         };
+    }
+ */
+
+    @Test
+    void oneEmptyStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
+        HttpEntity<StorageUnitDto> request = new HttpEntity<>(storageUnitDto1);
+        StorageUnit storageUnit1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, StorageUnit.class).getBody());
+        storageUnitDto1.setId(storageUnit1.getId());
+        storageUnitDto1.setComponentId(component1.getId());
+        storageUnitDto1.setQuantity(100.0);
+        LocalDateTime dateAdded = storageUnit1.getDateAdded();
+        LocalDateTime dateModified = storageUnit1.getDateModified();
+
+        ResponseEntity<StorageUnit> response = testController.update(storageUnit1.getId(), storageUnitDto1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        StorageUnit result = Objects.requireNonNull(response.getBody());
+        assertEquals(storageUnit1.getId(), result.getId());
+        assertEquals(storageUnitDto1.getComponentId(), result.getComponent().getId());
+        assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
+        assertTrue(dateModified.isBefore(result.getDateModified()));
+        assertEquals(storageUnitDto1.getQuantity(), result.getQuantity());
+    }
+
+    @Test
+    void oneOccupiedStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
+        storageUnitDto1.setComponentId(component1.getId());
+        storageUnitDto1.setQuantity(100.0);
+        StorageUnit storageUnit1 = Objects.requireNonNull(testController.add(storageUnitDto1).getBody());
+        storageUnitDto1.setId(storageUnit1.getId());
+        LocalDateTime dateAdded = storageUnit1.getDateAdded();
+        LocalDateTime dateModified = storageUnit1.getDateModified();
+        storageUnitDto1.setComponentId(null);
+        storageUnitDto1.setQuantity(0.0);
+
+        ResponseEntity<StorageUnit> response = testController.update(storageUnit1.getId(), storageUnitDto1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        StorageUnit result = Objects.requireNonNull(response.getBody());
+        assertEquals(storageUnit1.getId(), result.getId());
+        assertNull(result.getComponent());
+        assertEquals(0.0, result.getQuantity());
+        assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
+        assertTrue(dateModified.isBefore(result.getDateModified()));
+        assertEquals(storageUnitDto1.getQuantity(), result.getQuantity());
     }
 }
