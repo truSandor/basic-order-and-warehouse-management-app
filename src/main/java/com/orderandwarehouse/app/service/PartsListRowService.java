@@ -31,6 +31,7 @@ public class PartsListRowService {
     public List<PartsListRow> addAllToProduct(Long productId, List<PartsListRowDto> dtoPartsList) {
         checkIfAllPartsListRowsHaveTheGivenProductId(productId, dtoPartsList);
         List<PartsListRow> partsList = dtoPartsList.stream().map(converter::dtoToEntityForAdding).toList();
+        partsList.forEach(this::checkIfProductHasActiveOrder);
         return partsListRowDao.saveAll(partsList);
     }
 
@@ -42,12 +43,16 @@ public class PartsListRowService {
 
     public void delete(Long id) {
         PartsListRow partsListRow = partsListRowDao.findById(id).orElseThrow();
+        checkIfProductHasActiveOrder(partsListRow);
+        partsListRowDao.deleteById(id);
+    }
+
+    private void checkIfProductHasActiveOrder(PartsListRow partsListRow) {
         if (partsListRow.getProduct().hasActiveOrders())
             throw new ProductStillInUseException(
                     partsListRow.getProduct().getId(),
                     partsListRow.getProduct().getActiveOrderIds(),
                     true);
-        partsListRowDao.deleteById(id);
     }
 
     public void deleteAllByProductId(Long productId) {
