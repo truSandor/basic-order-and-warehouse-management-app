@@ -3,6 +3,7 @@ package com.orderandwarehouse.app.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orderandwarehouse.app.controller.StorageUnitController;
+import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
 import com.orderandwarehouse.app.model.Component;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.Type;
@@ -23,6 +24,7 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -177,7 +179,7 @@ public class StorageUnitIntegrationTests {
         LocalDateTime dateAdded = storageUnit1.getDateAdded();
         LocalDateTime dateModified = storageUnit1.getDateModified();
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<StorageUnitDto> httpEntity = new HttpEntity<>(storageUnitDto1, headers);
         ResponseEntity<StorageUnit> response = restTemplate.exchange(entityUrl + "/" + storageUnitDto1.getId(), HttpMethod.PUT, httpEntity, StorageUnit.class);
 //        ResponseEntity<StorageUnit> response = restTemplate.execute(entityUrl + "/" + storageUnitDto1.getId(),
@@ -254,5 +256,57 @@ public class StorageUnitIntegrationTests {
         assertEquals(dateAdded.truncatedTo(ChronoUnit.MILLIS), result.getDateAdded().truncatedTo(ChronoUnit.MILLIS));
         assertTrue(dateModified.isBefore(result.getDateModified()));
         assertEquals(storageUnitDto1.getQuantity(), result.getQuantity());
+    }
+
+    @Test
+    void someEmptyStorageUnitStored_validDeleteRequest_getAllReturnsRemaining() {
+        List<StorageUnitDto> testData = new ArrayList<>(List.of(storageUnitDto1, storageUnitDto2, storageUnitDto3));
+        List<StorageUnit> storageUnits = testData.stream()
+                .map(dto -> {
+                    StorageUnit su = restTemplate.postForObject(entityUrl, dto, StorageUnit.class);
+                    dto.setId(su.getId());
+                    return su;
+                })
+                .toList();
+        int expected = testData.size();
+        assertEquals(expected, storageUnits.size());
+        assertNotNull(storageUnitDto1.getId());
+
+        testData.remove(storageUnitDto1);
+        Set<Long> storageUnitDtoIds = testData.stream().map(StorageUnitDto::getId).collect(Collectors.toSet());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<HttpStatus> deleteResponse = restTemplate.exchange(entityUrl + "/" + storageUnitDto1.getId(), HttpMethod.DELETE, httpEntity, HttpStatus.class);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        ResponseEntity<StorageUnit[]> getAllResponse = restTemplate.getForEntity(entityUrl, StorageUnit[].class);
+        StorageUnit[] result = Objects.requireNonNull(getAllResponse.getBody());
+        assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
+        assertEquals(expected - 1, result.length);
+        assertTrue(Arrays.stream(result).map(StorageUnit::getId).allMatch(storageUnitDtoIds::contains));
+    }
+
+    @Test
+    void oneOccupiedStorageUnitStored_validDeleteRequest_returnsNOT_ACCEPTABLE() {
+        List<StorageUnitDto> testData = new ArrayList<>(List.of(storageUnitDto1, storageUnitDto2, storageUnitDto3));
+        storageUnitDto1.setComponentId(component1.getId());
+        List<StorageUnit> storageUnits = testData.stream()
+                .map(dto -> {
+                    StorageUnit su = Objects.requireNonNull(testController.add(dto).getBody());
+                    dto.setId(su.getId());
+                    return su;
+                })
+                .toList();
+        int expected = testData.size();
+        assertEquals(expected, storageUnits.size());
+        assertNotNull(storageUnitDto1.getId());
+        assertThrows(StorageUnitStillInUseException.class, () -> testController.delete(storageUnitDto1.getId()));
+
+        ResponseEntity<List<StorageUnit>> getAllResponse = testController.getAll();
+        assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
+        storageUnits = Objects.requireNonNull(getAllResponse.getBody());
+        assertEquals(expected, storageUnits.size());
     }
 }
