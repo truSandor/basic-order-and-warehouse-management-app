@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class ProductConverter {
     public Product dtoToEntityForAdding(ProductDto dto) {
         Product entity = new Product();
         setAttributes(dto, entity);
-        entity.setDateAdded(LocalDateTime.now());
+        entity.setDateAdded(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         return entity;
     }
 
@@ -33,6 +34,6 @@ public class ProductConverter {
         entity.setVersion(dto.getVersion());
         entity.setDimensions(dto.getDimensions());
         entity.setWeightInGrammes(dto.getWeightInGrammes());
-        entity.setDateModified(LocalDateTime.now());
+        entity.setDateModified(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
     }
 }

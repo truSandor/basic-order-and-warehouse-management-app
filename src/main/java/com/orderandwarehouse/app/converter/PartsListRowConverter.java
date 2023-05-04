@@ -9,6 +9,7 @@ import com.orderandwarehouse.app.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
 @org.springframework.stereotype.Component
@@ -23,7 +24,7 @@ public class PartsListRowConverter {
         entity.setProduct(productDao.findById(dto.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("Product not found!")));
         setAttributes(dto, entity);
-        entity.setDateAdded(LocalDateTime.now());
+        entity.setDateAdded(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         return entity;
     }
 
@@ -40,7 +41,7 @@ public class PartsListRowConverter {
         entity.setQuantity(dto.getQuantity());
         entity.setUnit(dto.getUnit());
         entity.setComment(dto.getComment());
-        entity.setDateModified(LocalDateTime.now());
+        entity.setDateModified(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
     }
 
 }

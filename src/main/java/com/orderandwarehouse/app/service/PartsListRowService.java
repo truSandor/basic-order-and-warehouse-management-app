@@ -6,21 +6,22 @@ import com.orderandwarehouse.app.model.PartsListRow;
 import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.dto.PartsListRowDto;
 import com.orderandwarehouse.app.repository.PartsListRowDao;
+import com.orderandwarehouse.app.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PartsListRowService {
     private final PartsListRowDao partsListRowDao;
     private final PartsListRowConverter converter;
+    private final ProductDao productDao;
 
     public List<PartsListRow> getPartsListByProductId(Long productId) {
+        if (!productDao.existsById(productId))
+            throw new NoSuchElementException(String.format("Product '%d' not found!", productId));
         return partsListRowDao.findAllByProductId(productId);
     }
 
@@ -57,7 +58,8 @@ public class PartsListRowService {
 
     public void deleteAllByProductId(Long productId) {
         Product product = getProductById(productId);
-        if (product.hasActiveOrders()) throw new ProductStillInUseException(productId, product.getActiveOrderIds(), true);
+        if (product.hasActiveOrders())
+            throw new ProductStillInUseException(productId, product.getActiveOrderIds(), true);
         partsListRowDao.deleteByProduct_Id(productId);
     }
 

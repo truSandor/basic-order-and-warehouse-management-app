@@ -9,6 +9,7 @@ import com.orderandwarehouse.app.repository.StorageUnitDao;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 
@@ -24,7 +25,7 @@ public class StorageUnitConverter {
         entity.setColumn(dto.getColumn());
         entity.setShelf(dto.getShelf());
         setAttributes(dto, entity);
-        entity.setDateAdded(LocalDateTime.now());
+        entity.setDateAdded(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         return entity;
     }
 
@@ -52,6 +53,6 @@ public class StorageUnitConverter {
         }
         entity.setQuantity(dto.getQuantity());
         entity.setFull(dto.isFull());
-        entity.setDateModified(LocalDateTime.now());
+        entity.setDateModified(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
     }
 }

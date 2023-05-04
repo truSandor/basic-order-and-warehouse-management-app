@@ -7,6 +7,7 @@ import com.orderandwarehouse.app.repository.ComponentDao;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @org.springframework.stereotype.Component
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class ComponentConverter {
     public Component dtoToEntityForAdding(ComponentDto dto) {
         Component entity = new Component();
         setAttributes(dto, entity);
-        entity.setDateAdded(LocalDateTime.now());
+        entity.setDateAdded(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         return entity;
     }
 
@@ -39,6 +40,6 @@ public class ComponentConverter {
         entity.setWeightInGrammes(dto.getWeightInGrammes());
         entity.setManufacturerId(dto.getManufacturerId());
         entity.setTraderComponentId(dto.getTraderComponentId());
-        entity.setDateModified(LocalDateTime.now());
+        entity.setDateModified(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
     }
 }
