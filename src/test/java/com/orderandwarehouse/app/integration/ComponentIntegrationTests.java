@@ -50,7 +50,7 @@ public class ComponentIntegrationTests {
     private ComponentDto componentDto2;
     private ComponentDto componentDto3;
 
-    private Product product;
+    private Product product1;
 
     @BeforeEach
     void setUp() {
@@ -64,7 +64,7 @@ public class ComponentIntegrationTests {
         componentDto3 = ComponentDto.builder().name("component3").type(Type.THD).build();
 
         ProductDto productDto = ProductDto.builder().name("product1").build();
-        product = restTemplate.postForObject(baseUrl + "/products", productDto, Product.class);
+        product1 = restTemplate.postForObject(baseUrl + "/products", productDto, Product.class);
     }
 
 
@@ -286,13 +286,12 @@ public class ComponentIntegrationTests {
     @Test
     void oneComponentWithPartsListRow_deleteById_throwsComponentStillInUseException() {
         Component component = restTemplate.postForObject(entityUrl, componentDto1, Component.class);
-        PartsListRowDto partsListRowDto = PartsListRowDto.builder().productId(product.getId()).componentId(component.getId()).quantity(1.0).build();
+        PartsListRowDto partsListRowDto = PartsListRowDto.builder().productId(product1.getId()).componentId(component.getId()).quantity(1.0).build();
         PartsListRow partsListRow = Objects.requireNonNull(partsListRowController.add(partsListRowDto).getBody());
         assertEquals(partsListRowDto.getProductId(), partsListRow.getProduct().getId());
         assertEquals(component.getId(), partsListRow.getComponent().getId());
-        partsListRowController.getPartsListByProductId(product.getId());
-        //todo probably mocking is needed here
-        assertThrows(ComponentStillInUseException.class, () -> componentController.delete(component.getId()));
+        ComponentStillInUseException ex = assertThrows(ComponentStillInUseException.class, () -> componentController.delete(component.getId()));
+        assertEquals("Component '1' is still in use!", ex.getMessage());
         assertEquals(1, Objects.requireNonNull(componentController.getAll().getBody()).size());
     }
 }
