@@ -27,10 +27,10 @@ public class Product {
     private Integer weightInGrammes;
     private LocalDateTime dateAdded;
     private LocalDateTime dateModified;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Order> orders;
 

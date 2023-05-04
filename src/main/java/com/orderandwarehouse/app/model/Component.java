@@ -34,10 +34,10 @@ public class Component {
     private String traderComponentId;
     private LocalDateTime dateAdded;
     private LocalDateTime dateModified;
-    @OneToMany(mappedBy = "component")
+    @OneToMany(mappedBy = "component", fetch = FetchType.EAGER)
     @JsonIdentityReference(alwaysAsId = true)
     private List<StorageUnit> storageUnits;
-    @OneToMany(mappedBy = "component")
+    @OneToMany(mappedBy = "component" , fetch = FetchType.EAGER)
     @JsonIdentityReference(alwaysAsId = true)
     private List<PartsListRow> partsListRows;
 
