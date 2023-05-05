@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -110,65 +111,138 @@ public class PartsListRowIntegrationTests {
         assertEquals(product1, result.getProduct());
         assertEquals(component1, result.getComponent());
         assertEquals(partsListRowDto1.getQuantity(), result.getQuantity());
+
     }
 
     @Test
-    public void oneProductInDatabase_addValidStorageUnit_returnsAddedStorageUnit() {
-//TODO rename and implement
+    public void oneProductInDatabase_addValidPartsList_returnsAddedPartsListRows() {
+        List<PartsListRowDto> partsListRowDtos = List.of(partsListRowDto1, partsListRowDto2, partsListRowDto3);
+        ResponseEntity<List<PartsListRow>> response = partsListRowController.addAllToProduct(1L, partsListRowDtos);
+        List<PartsListRow> result = Objects.requireNonNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Set<String> componentNames = Set.of(component1.getName(), component2.getName(), component3.getName());
+        assertTrue(result.stream().allMatch(plr -> componentNames.contains(plr.getComponent().getName())));
+        assertTrue(result.stream().allMatch(plr -> plr.getProduct().getName().equals(product1.getName())));
+
+        ResponseEntity<List<PartsListRow>> response1 = partsListRowController.getPartsListByProductId(product1.getId());
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+        List<PartsListRow> partsList = Objects.requireNonNull(response1.getBody());
+        assertTrue(partsList.stream().allMatch(plr -> componentNames.contains(plr.getComponent().getName())));
+        assertTrue(partsList.stream().allMatch(plr -> plr.getProduct().getName().equals(product1.getName())));
     }
 
     @Test
-    public void emptyDatabase_addInvalidStorageUnitDto1_returnsBAD_REQUEST() {
-//TODO rename and implement
+    public void oneProductInDatabase_addPartsListRowWithInvalidProductId_returnsBAD_REQUEST() {
+        partsListRowDto1.setProductId(0L);
+        ResponseEntity<Object> response = restTemplate.postForEntity(entityUrl, partsListRowDto1, Object.class);
+        Map<String, String> expectedBody = new HashMap<>() {{
+            put("productId", "Needs to be greater or equal to 1!");
+        }};
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
     }
 
     @Test
-    public void emptyDatabase_addInvalidStorageUnitDto2_returnsBAD_REQUEST() {
-//TODO rename and implement
+    public void oneProductInDatabase_addPartsListRowWithNonExistentProductId_returnsNOT_FOUND() {
+        partsListRowDto1.setProductId(200L);
+        ResponseEntity<String> response = restTemplate.postForEntity(entityUrl, partsListRowDto1, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product not found!", response.getBody());
     }
 
     @Test
-    public void emptyDatabase_addInvalidStorageUnitDto3_returnsBAD_REQUEST() {
-//TODO rename and implement
+    public void oneProductInDatabase_addPartsListRowWithInvalidComponentId_returnsBAD_REQUEST() {
+        partsListRowDto1.setComponentId(0L);
+        ResponseEntity<Object> response = restTemplate.postForEntity(entityUrl, partsListRowDto1, Object.class);
+        Map<String, String> expectedBody = new HashMap<>() {{
+            put("componentId", "Needs to be greater or equal to 1!");
+        }};
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
     }
 
     @Test
-    public void someStorageUnitsStored_getAll_returnsAll() {
-//TODO rename and implement
+    public void oneProductInDatabase_addPartsListRowWithNonExistentComponentId_returnsNOT_FOUND() {
+        partsListRowDto1.setComponentId(200L);
+        ResponseEntity<String> response = restTemplate.postForEntity(entityUrl, partsListRowDto1, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Component not found!", response.getBody());
     }
 
     @Test
-    public void oneStorageUnitStored_getById_returnsStorageUnit() {
-//TODO rename and implement
+    public void oneProductInDatabaseWithPartsLists_updateAllBelongingToProduct_returnsPartsList() {
+        List<PartsListRowDto> partsListRowDtos = List.of(partsListRowDto1, partsListRowDto2, partsListRowDto3);
+        ResponseEntity<List<PartsListRow>> responseEntity = partsListRowController.addAllToProduct(1L, partsListRowDtos);
+        List<PartsListRow> partsList = Objects.requireNonNull(responseEntity.getBody());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertTrue(partsList.stream().unordered().noneMatch(plr -> plr.getQuantity() == 2000000000000.0));
+
+        Double updatedQuantity = 2000000000000.0;
+        partsListRowDto1.setQuantity(updatedQuantity);
+        partsListRowDto2.setQuantity(updatedQuantity);
+        partsListRowDto3.setQuantity(updatedQuantity);
+        partsListRowDto1.setId(1L);
+        partsListRowDto2.setId(2L);
+        partsListRowDto3.setId(3L);
+
+        ResponseEntity<List<PartsListRow>> response = partsListRowController.updateAllBelongingToProduct(1L, new HashSet<>(partsListRowDtos));
+        List<PartsListRow> result = Objects.requireNonNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Set<String> componentNames = Set.of(component1.getName(), component2.getName(), component3.getName());
+        assertTrue(result.stream().allMatch(plr -> componentNames.contains(plr.getComponent().getName())));
+        assertTrue(result.stream().allMatch(plr -> plr.getProduct().getName().equals(product1.getName())));
+        assertTrue(result.stream().allMatch(plr -> Objects.equals(plr.getQuantity(), updatedQuantity)));
     }
 
     @Test
-    public void emptyDatabase_getByInvalidId_returnsBAD_REQUEST() {
-//TODO rename and implement
+    public void oneProductInDatabaseWithPartsLists_updatedPartsListContainsOneRowNotBelongingToProduct_returnsBAD_REQUEST() {
+        List<PartsListRowDto> partsListRowDtos = List.of(partsListRowDto1, partsListRowDto2, partsListRowDto3);
+        ResponseEntity<List<PartsListRow>> responseEntity = partsListRowController.addAllToProduct(1L, partsListRowDtos);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        partsListRowDto2.setProductId(2L);
+        InputMismatchException ex = assertThrows(InputMismatchException.class,
+                () -> partsListRowController.updateAllBelongingToProduct(1L, new HashSet<>(partsListRowDtos)));
+        assertEquals("Not all parts list rows have the same product id, Or id in path is different!", ex.getMessage());
     }
 
     @Test
-    public void emptyDatabase_getByNonExistentId_returnsNOT_FOUND() {
-//TODO rename and implement
+    public void oneProductInDatabaseWithPartsLists_deleteOneRow_deletesLine() {
+        List<PartsListRowDto> partsListRowDtos = List.of(partsListRowDto1, partsListRowDto2, partsListRowDto3);
+        ResponseEntity<List<PartsListRow>> responseEntity = partsListRowController.addAllToProduct(1L, partsListRowDtos);
+        List<PartsListRow> partsList = Objects.requireNonNull(responseEntity.getBody());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        PartsListRow partsListRow = partsList.remove(0);
+        Set<Long> partsListRowIds = partsList.stream().map(PartsListRow::getId).collect(Collectors.toSet());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<HttpStatus> deleteResponse = restTemplate.exchange(entityUrl + "/delete/single/row/" + partsListRow.getId(), HttpMethod.DELETE, httpEntity, HttpStatus.class);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        ResponseEntity<List<PartsListRow>> response1 = partsListRowController.getPartsListByProductId(product1.getId());
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+        List<PartsListRow> result = Objects.requireNonNull(response1.getBody());
+        assertFalse(result.isEmpty());
+        assertTrue(result.stream().allMatch(plr -> partsListRowIds.contains(plr.getId())));
+        assertFalse(result.stream().anyMatch(plr -> plr.getId().equals(partsListRow.getId())));
     }
 
     @Test
-    public void oneEmptyStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
-//TODO rename and implement
-    }
+    public void oneProductInDatabaseWithPartsLists_deletePartsList_deletesPartsList() {
+        List<PartsListRowDto> partsListRowDtos = List.of(partsListRowDto1, partsListRowDto2, partsListRowDto3);
+        ResponseEntity<List<PartsListRow>> responseEntity = partsListRowController.addAllToProduct(1L, partsListRowDtos);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
-    @Test
-    public void oneOccupiedStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
-//TODO rename and implement
-    }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<HttpStatus> deleteResponse = restTemplate.exchange(entityUrl + "/" + product1.getId() , HttpMethod.DELETE, httpEntity, HttpStatus.class);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
 
-    @Test
-    public void someEmptyStorageUnitStored_validDeleteRequest_getAllReturnsRemaining() {
-//TODO rename and implement
-    }
-
-    @Test
-    public void oneOccupiedStorageUnitStored_validDeleteRequest_returnsNOT_ACCEPTABLE() {
-//TODO rename and implement
+        ResponseEntity<List<PartsListRow>> response1 = partsListRowController.getPartsListByProductId(product1.getId());
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+       assertTrue(Objects.requireNonNull(response1.getBody()).isEmpty());
     }
 }
