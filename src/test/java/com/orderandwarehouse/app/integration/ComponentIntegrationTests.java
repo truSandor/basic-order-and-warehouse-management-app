@@ -209,12 +209,11 @@ public class ComponentIntegrationTests {
     }
 
     @Test
-    void oneComponentStored_wrongIdInDtoUpdateRequest_returnsError() {
+    void oneComponentStored_wrongIdInDtoUpdateRequest_returnsBAD_REQUEST() {
         HttpEntity<ComponentDto> request = new HttpEntity<>(componentDto1);
         Component component1 = Objects.requireNonNull(restTemplate.postForEntity(entityUrl, request, Component.class).getBody());
         Long wrongId = 2L;
         componentDto1.setId(wrongId);
-        componentDto1.setName("componentDto1 updated");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ComponentDto> httpEntity = new HttpEntity<>(componentDto1, headers);
