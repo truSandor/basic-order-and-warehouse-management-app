@@ -1,6 +1,5 @@
 package com.orderandwarehouse.app.converter;
 
-import com.orderandwarehouse.app.exception.NoIdException;
 import com.orderandwarehouse.app.model.Product;
 import com.orderandwarehouse.app.model.dto.ProductDto;
 import com.orderandwarehouse.app.repository.ProductDao;
@@ -23,7 +22,6 @@ public class ProductConverter {
     }
 
     public Product dtoToEntityForUpdating(ProductDto dto) {
-        if (dto.getId() == null) throw new NoIdException(dto.getClass());
         Product entity = productDao.findById(dto.getId()).orElseThrow();
         setAttributes(dto, entity);
         return entity;

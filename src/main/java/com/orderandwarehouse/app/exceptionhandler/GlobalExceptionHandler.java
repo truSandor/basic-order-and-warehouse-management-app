@@ -44,7 +44,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage() != null ? ex.getMessage() : "Record not found!", HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({NoIdException.class, InputMismatchException.class})
+    @ExceptionHandler(InputMismatchException.class)
     protected ResponseEntity<String> HandleOtherExceptions(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }

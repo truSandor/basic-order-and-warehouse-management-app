@@ -1,6 +1,5 @@
 package com.orderandwarehouse.app.converter;
 
-import com.orderandwarehouse.app.exception.NoIdException;
 import com.orderandwarehouse.app.model.StorageUnit;
 import com.orderandwarehouse.app.model.dto.StorageUnitDto;
 import com.orderandwarehouse.app.repository.ComponentDao;
@@ -30,7 +29,6 @@ public class StorageUnitConverter {
     }
 
     public StorageUnit dtoToEntityForUpdating(StorageUnitDto dto) {
-        if (dto.getId() == null) throw new NoIdException(dto.getClass());
         StorageUnit entity = storageUnitDao.findById(dto.getId()).orElseThrow();
         if (!(entity.getRow().equals(dto.getRow()) &&
                 entity.getColumn().equals(dto.getColumn()) &&
