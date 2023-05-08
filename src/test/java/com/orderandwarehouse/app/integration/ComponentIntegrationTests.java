@@ -293,4 +293,21 @@ public class ComponentIntegrationTests {
         assertEquals("Component '1' is still in use!", ex.getMessage());
         assertEquals(1, Objects.requireNonNull(componentController.getAll().getBody()).size());
     }
+
+    @Test
+    void someComponentsStored_getByNameLike_returnsComponentsWithNameLike() {
+        String searchWord = "resis";
+        componentDto1.setName("1206 resistor 2Ohm");
+        componentDto2.setName("resistor 0603 20Ohm");
+        componentDto3.setName("relay 12V 6A");
+        restTemplate.postForObject(entityUrl, componentDto1, Component.class);
+        restTemplate.postForObject(entityUrl, componentDto2, Component.class);
+        restTemplate.postForObject(entityUrl, componentDto3, Component.class);
+        Set<String> expectedNames = Set.of(componentDto1.getName(), componentDto2.getName());
+        ResponseEntity<Component[]> response = restTemplate.getForEntity(entityUrl + "?nameLike=" + searchWord, Component[].class);
+        List<Component> result = Arrays.stream(Objects.requireNonNull(response.getBody())).toList();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedNames.size(), result.size());
+        assertEquals(expectedNames, result.stream().map(Component::getName).collect(Collectors.toSet()));
+    }
 }

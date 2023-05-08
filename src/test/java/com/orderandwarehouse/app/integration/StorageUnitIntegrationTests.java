@@ -1,7 +1,6 @@
 package com.orderandwarehouse.app.integration;
 
 
-
 import com.orderandwarehouse.app.controller.StorageUnitController;
 import com.orderandwarehouse.app.exception.StorageUnitStillInUseException;
 import com.orderandwarehouse.app.model.Component;
@@ -34,7 +33,7 @@ public class StorageUnitIntegrationTests {
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
-    private StorageUnitController testController;
+    private StorageUnitController storageUnitController;
 
 
     @LocalServerPort
@@ -177,7 +176,7 @@ public class StorageUnitIntegrationTests {
         LocalDateTime dateAdded = storageUnit1.getDateAdded();
         LocalDateTime dateModified = storageUnit1.getDateModified();
 
-        ResponseEntity<StorageUnit> response = testController.update(storageUnit1.getId(), storageUnitDto1);
+        ResponseEntity<StorageUnit> response = storageUnitController.update(storageUnit1.getId(), storageUnitDto1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         StorageUnit result = Objects.requireNonNull(response.getBody());
         assertEquals(storageUnit1.getId(), result.getId());
@@ -191,14 +190,14 @@ public class StorageUnitIntegrationTests {
     void oneOccupiedStorageUnitStored_validUpdateRequest_returnsUpdatedStorageUnit() {
         storageUnitDto1.setComponentId(component1.getId());
         storageUnitDto1.setQuantity(100.0);
-        StorageUnit storageUnit1 = Objects.requireNonNull(testController.add(storageUnitDto1).getBody());
+        StorageUnit storageUnit1 = Objects.requireNonNull(storageUnitController.add(storageUnitDto1).getBody());
         storageUnitDto1.setId(storageUnit1.getId());
         LocalDateTime dateAdded = storageUnit1.getDateAdded();
         LocalDateTime dateModified = storageUnit1.getDateModified();
         storageUnitDto1.setComponentId(null);
         storageUnitDto1.setQuantity(0.0);
 
-        ResponseEntity<StorageUnit> response = testController.update(storageUnit1.getId(), storageUnitDto1);
+        ResponseEntity<StorageUnit> response = storageUnitController.update(storageUnit1.getId(), storageUnitDto1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         StorageUnit result = Objects.requireNonNull(response.getBody());
         assertEquals(storageUnit1.getId(), result.getId());
@@ -245,7 +244,7 @@ public class StorageUnitIntegrationTests {
         storageUnitDto1.setComponentId(component1.getId());
         List<StorageUnit> storageUnits = testData.stream()
                 .map(dto -> {
-                    StorageUnit su = Objects.requireNonNull(testController.add(dto).getBody());
+                    StorageUnit su = Objects.requireNonNull(storageUnitController.add(dto).getBody());
                     dto.setId(su.getId());
                     return su;
                 })
@@ -253,11 +252,29 @@ public class StorageUnitIntegrationTests {
         int expected = testData.size();
         assertEquals(expected, storageUnits.size());
         assertNotNull(storageUnitDto1.getId());
-        assertThrows(StorageUnitStillInUseException.class, () -> testController.delete(storageUnitDto1.getId()));
+        assertThrows(StorageUnitStillInUseException.class, () -> storageUnitController.delete(storageUnitDto1.getId()));
 
-        ResponseEntity<List<StorageUnit>> getAllResponse = testController.getAll();
+        ResponseEntity<List<StorageUnit>> getAllResponse = storageUnitController.getAll();
         assertEquals(HttpStatus.OK, getAllResponse.getStatusCode());
         storageUnits = Objects.requireNonNull(getAllResponse.getBody());
         assertEquals(expected, storageUnits.size());
+    }
+
+    @Test
+    void SomeOccupiedStorageUnitsStored_getAllByComponentId_returnsWithListOfStorageUnitsContainingTheComponent() {
+        ComponentDto componentDto2 = ComponentDto.builder().name("component2").type(Type.THD).build();
+        Component component2 = restTemplate.postForObject(baseUrl + "/components", componentDto2, Component.class);
+        storageUnitDto1.setComponentId(component2.getId());
+        storageUnitDto2.setComponentId(component1.getId());
+        storageUnitDto3.setComponentId(component2.getId());
+        storageUnitController.add(storageUnitDto1);
+        storageUnitController.add(storageUnitDto2);
+        storageUnitController.add(storageUnitDto3);
+
+        ResponseEntity<List<StorageUnit>> response = storageUnitController.getAllByComponentId(component2.getId());
+        List<StorageUnit> result = Objects.requireNonNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(su -> su.getComponent().getId().equals(component2.getId())));
     }
 }

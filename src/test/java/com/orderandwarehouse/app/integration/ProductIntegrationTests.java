@@ -230,4 +230,34 @@ public class ProductIntegrationTests {
         }};
         assertEquals(expectedBody, response.getBody());
     }
+
+    @Test
+    void someProductsStored_getById_returnsTheRequestedProduct() {
+        Product product1 = restTemplate.postForObject(entityUrl, productDto1, Product.class);
+        restTemplate.postForObject(entityUrl, productDto2, Product.class);
+        restTemplate.postForObject(entityUrl, productDto3, Product.class);
+
+        ResponseEntity<Product> response = restTemplate.getForEntity(entityUrl + "/" + product1.getId(), Product.class);
+        Product result = Objects.requireNonNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(product1.getId(), result.getId());
+        assertEquals(product1.getName(), result.getName());
+    }
+
+    @Test
+    void someProductStored_getByNameLike_returnsProductsWithNameLike(){
+        String searchWord = "boa";
+        productDto1.setName("test 1 board");
+        productDto2.setName("test 2 panel");
+        productDto3.setName("test 3 board");
+        Set<String> expectedNames = Set.of(productDto1.getName(), productDto3.getName());
+        restTemplate.postForObject(entityUrl, productDto1, Product.class);
+        restTemplate.postForObject(entityUrl, productDto2, Product.class);
+        restTemplate.postForObject(entityUrl, productDto3, Product.class);
+        ResponseEntity<Product[]> response = restTemplate.getForEntity(entityUrl + "?nameLike=" + searchWord, Product[].class);
+        List<Product> result = Arrays.stream(Objects.requireNonNull(response.getBody())).toList();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedNames.size(), result.size());
+        assertEquals(expectedNames, result.stream().map(Product::getName).collect(Collectors.toSet()));
+    }
 }
