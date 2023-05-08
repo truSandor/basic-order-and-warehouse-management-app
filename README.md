@@ -75,6 +75,12 @@ Build the project with javac/maven
 
 ## Endpoints
 
+### landing-controller
+
+- **GET
+/**
+Shows the landing page with some endpoints.
+
 ### storage-unit-controller
 
 - **GET
