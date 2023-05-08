@@ -15,15 +15,16 @@ It can be deployed with the included **docker-compose.yml** file.
 
 use the included ***docker-compose.yml*** file with the command
 
->docker compose --env-file .env up -d
+> docker compose --env-file .env up -d
 
 where ***".env"*** is your environment variable file.
 
 Or on linux just run the ***docker_compose_with_env.sh*** script.
 
 example ***".env"*** file:
-> DB_USER=db_user_name
-> DB_PASSWORD=db_user_password
+
+    DB_USER=db_user_name
+    DB_PASSWORD=db_user_password
 
 ### Manual (not recommended)
 
