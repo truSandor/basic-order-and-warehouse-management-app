@@ -1,6 +1,10 @@
 # basic-order-and-warehouse-management-app
 This project was created as a final project for the "Enterprise backend" course at Codecool.
 
+One instant of the app is currently* running [here](http://129.151.211.224/).
+
+* *probably, unless it crashed, or I shut it down*
+
 ## Description
 
 As the title suggest the goal of this project is to create the backend for a stripped down, partial ERP software, that is capable of managing order and warehouse tasks.
