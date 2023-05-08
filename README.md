@@ -19,16 +19,24 @@ It can be deployed with the included **docker-compose.yml** file.
 
 use the included ***docker-compose.yml*** file with the command
 
-> docker compose --env-file .env up -d
+> docker compose --env-file variables.env up -d
 
-where ***".env"*** is your environment variable file.
+where ***"variables.env"*** is your environment variable file.
 
 Or on linux just run the ***docker_compose_with_env.sh*** script.
 
-example ***".env"*** file:
+example ***"variables.env"*** file:
 
-    DB_USER=db_user_name
-    DB_PASSWORD=db_user_password
+    POSTGRES_DB=oaw_db
+    POSTGRES_USER=db_user
+    POSTGRES_PASSWORD=db_pass
+    DB_HOST=db
+    DB_PORT=5432
+    DB_NAME=${POSTGRES_DB}
+    DB_USER=${POSTGRES_USER}
+    DB_PASSWORD=${POSTGRES_PASSWORD}
+
+* *note: variables starting with *POSTGRES_*\* are mandatory for postgreSQL container, variables starting with *DB_*\* are needed for the backend. The backend has default values for these environment variables, but the might not match up with the actual db.
 
 ### Manual (not recommended)
 
@@ -60,7 +68,7 @@ Build the project with javac/maven
 
 4) run the backend image
 
-> docker run --name cont_oaw_app -p 80:8080 -e DB_HOST=cont_psql_oaw_db -e DB_PORT=5432 -e DB_USER=person -e DB_PASSWORD=person --network oaw_network -rm -d img_oaw_app
+> docker run --name cont_oaw_app -p 80:8080 -e DB_HOST=cont_psql_oaw_db -e DB_PORT=5432 -e DB_USER=person -e DB_PASSWORD=person --DB_NAME=aow_db --network oaw_network -rm -d img_oaw_app
 
 * *note: the -e parameters are the environment variables*
 
@@ -70,6 +78,7 @@ Build the project with javac/maven
 
 - **DB_HOST** (default: localhost) : database host address, **not needed if you are using the docker-compose file.**
 - **DB_PORT** (default: 5432) : database port, **not needed if you are using the docker-compose file.**
+- **DB_NAME** (default: oaw_db): name of the database
 - **DB_USER** (default: person) : database user
 - **DB_PASSWORD** (default: person) :database user's password
 
@@ -203,8 +212,8 @@ Adds new component to the database. Component is given as Json object in the req
 
 #### Swagger
 
-- /swagger-ui/index.html
+- /swagger-ui/index.html ([on localhost](http://localhost:8080/swagger-ui/index.html))
 
 #### H2 console
 
-- /h2-console/
+- /h2-console/ ([on localhost](http://localhost:8080/h2-console))
