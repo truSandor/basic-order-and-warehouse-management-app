@@ -1,2 +1,2 @@
 #!/bin/sh
-docker compose --env-file .env up -d
+docker compose --env-file variables.env up -d
