@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class PartsListRow {
 
-    private static final String MAX_SIZE_MESSAGE = "Max {max} characters!";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

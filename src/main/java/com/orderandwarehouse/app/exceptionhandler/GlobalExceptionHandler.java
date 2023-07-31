@@ -40,12 +40,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<String> HandleNoSuchElementException(NoSuchElementException ex) {
+    protected ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
         return new ResponseEntity<>(ex.getMessage() != null ? ex.getMessage() : "Record not found!", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InputMismatchException.class)
-    protected ResponseEntity<String> HandleOtherExceptions(Exception ex) {
+    protected ResponseEntity<String> handleOtherExceptions(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(OrderInProgressException.class)
-    protected ResponseEntity<Object> HandleOrderInProgressException(OrderInProgressException ex) {
+    protected ResponseEntity<Object> handleOrderInProgressException(OrderInProgressException ex) {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         body.put("orderId", ex.getOrderId().toString());
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ProductStillInUseException.class)
-    protected ResponseEntity<Object> HandleProductStillInUseException(ProductStillInUseException ex) {
+    protected ResponseEntity<Object> handleProductStillInUseException(ProductStillInUseException ex) {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         body.put("productId", ex.getProductId().toString());
